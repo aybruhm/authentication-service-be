@@ -10,7 +10,8 @@ from account_service.views import (
     VerifyEmailAPIView,
     VerifyEmailUidTokenAPIView,
     ResetPasswordAPIView, 
-    VerifyResetPasswordUidToken
+    VerifyResetPasswordUidToken,
+    ChangePasswordAPIView
 )
 
 app_name = "account_service"
@@ -29,4 +30,7 @@ urlpatterns = [
     # reset password
     path("reset_password/", ResetPasswordAPIView.as_view(), name="reset_password"),
     path("reset_password/<uidb64>/<token>/", VerifyResetPasswordUidToken.as_view(), name="reset_uidb64_token"),
+    
+    # change password
+    path("change_password/", ChangePasswordAPIView.as_view(), name="change_password"),
 ]

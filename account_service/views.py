@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework.request import Request
 
 # Djang Imports
-from django.contrib.auth import logout
+from django.contrib.auth import logout, hashers
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import urlsafe_base64_decode
 
@@ -18,7 +18,8 @@ from account_service.serializers import (
     RegisterUserSerializer,
     UserLoginObtainPairSerializer,
     UserEmailSerializer,
-    UserResetPasswordSerializer
+    UserResetPasswordSerializer,
+    UserChangePasswordSerializer
 )
 from account_service.services.emails.users import (
     send_email_to_user, 
@@ -221,3 +222,52 @@ class VerifyResetPasswordUidToken(views.APIView):
                 data={}
             )
             return Response(data=payload, status=status.HTTP_202_ACCEPTED)
+        
+    
+class ChangePasswordAPIView(views.APIView):
+    permission_classes = (permissions.IsAuthenticated)
+    serializer_class = UserChangePasswordSerializer
+    
+    def put(self, request:Request) -> Response:
+        serializer = self.serializer_class(data=request.data)
+        
+        if serializer.is_valid():
+            
+            user = get_active_user(request=request, user=serializer.validated_data.get("email"))
+            current_password = serializer.validated_data.get("current_password")
+            new_password = serializer.validated_data.get("new_password")
+            repeat_new_password = serializer.validated_data.get("repeat_new_password")
+            
+            # Confirms if the current inputted password equals to the user password
+            can_change_password = (
+                True
+                if hashers.check_password(current_password, user.password)
+                else False
+            )
+
+            # If can_change_password is True, 
+            # and new password requals the repeat new password, 
+            # set the password message to True else False
+            password_message = (
+                True
+                if can_change_password is True and new_password == repeat_new_password
+                else False
+            )
+            
+            # Update user password and save to database
+            if password_message is True:
+                user.password = new_password
+                user.set_password(new_password)
+                user.save()
+
+            
+            payload = success_response(
+                status="success", message="Password changed successfully!",
+                data={}
+            )
+            return Response(data=payload, status=status.HTTP_202_ACCEPTED)
+        
+        payload = error_response(
+            status="error", message=serializer.errors
+        )
+        return Response(data=payload, status=status.HTTP_400_BAD_REQUEST)
