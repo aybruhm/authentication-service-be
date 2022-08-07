@@ -7,7 +7,8 @@ from account_service.views import (
     LoginAPIView, 
     RefreshLoginAPIView,
     LogoutAPIView,
-    VerifyEmailAPIView
+    VerifyEmailAPIView,
+    VerifyEmailUidTokenAPIView 
 )
 
 app_name = "account_service"
@@ -19,4 +20,5 @@ urlpatterns = [
     path("logout/", LogoutAPIView.as_view(), name="logout"),
     
     path("verify_email/", VerifyEmailAPIView.as_view(), name="verify_email"),
+    path("verify_email/<uidb64>/<token>/", VerifyEmailUidTokenAPIView.as_view(), name="verify_uidb64_token")
 ]

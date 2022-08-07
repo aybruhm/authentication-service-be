@@ -5,10 +5,13 @@ from rest_framework.request import Request
 
 # Djang Imports
 from django.contrib.auth import logout
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.http import urlsafe_base64_decode
 
 # SimpleJWT Imports
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from rest_framework_simplejwt.serializers import TokenRefreshSerializer
+from account_service.models import AccountUser
 
 # Account Service Imports
 from account_service.serializers import (
@@ -101,5 +104,34 @@ class VerifyEmailAPIView(views.APIView):
         payload = error_response(
             status="error",
             message=serializer.errors
+        )
+        return Response(data=payload, status=status.HTTP_400_BAD_REQUEST)
+    
+
+class VerifyEmailUidTokenAPIView(views.APIView):
+    permission_classes = (permissions.AllowAny)
+    
+    def post(self, request:Request, uidb64, token) -> Response:
+        try:
+            uid = urlsafe_base64_decode(uidb64).decode()
+            user = AccountUser._default_manager.get(pk=uid)
+            
+        except(TypeError, ValueError, OverflowError, AccountUser.DoesNotExist):
+            user = None
+            
+        if user is not None and default_token_generator.check_token(user, token):
+            user.is_email_active = True
+            user.is_active = True
+            user.save()
+            
+            payload = success_response(
+                status="success",
+                message="Email activated!",
+                data={}
+            )
+            return Response(data=payload, status=status.HTTP_202_ACCEPTED)
+        
+        payload = error_response(
+            status="error", message="Email activation link is invalid. Request again!"
         )
         return Response(data=payload, status=status.HTTP_400_BAD_REQUEST)
