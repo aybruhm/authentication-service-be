@@ -21,7 +21,7 @@ import os
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Runtime Environment
-RUNTIME_ENVIRON = "core.config.local"  # when serving to production, change to '.production'
+RUNTIME_ENVIRON = "core.config.development"  # when serving to production, change to '.production'
 
 
 # Quick-start development settings - unsuitable for production
