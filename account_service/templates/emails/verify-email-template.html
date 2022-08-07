@@ -1,0 +1,50 @@
+{% extends "emails/base.html" %}
+
+{% load static %}
+
+{% block title %}
+Verify Email
+{% endblock title %}
+
+{% block email_content %}
+<section class="emails__template">
+    <div class="container">
+
+        <div class="emails__card">
+
+            <div class="emails__header">
+                <img src="https://loopscentral.netlify.app/assets/images/email-arrived.svg" alt="email-sent-svg"
+                    class="img-responsive emails__image">
+                <h2 class="emails__title">Welcome to Loopscentral</h2>
+            </div>
+
+            {% autoescape off %}
+            <div class="emails__body">
+
+                <p class="h4">
+                    Hi {{ user.username }},
+                </p>
+
+                <p class="h6">
+                    Thank you for signing up on Loopscentral. To continue using your account, kindly verify
+                    your email address by click the "Verify My Email" button below.
+                </p>
+
+                <a type="button"
+                    href="http://{{ domain }}{% url 'accounts:verify-uidb64-token' uidb64=uid token=token %}"
+                    target="_blank" class="btn email-verification-button">
+                    Verify My Email
+                </a>
+            </div>
+            {% endautoescape %}
+
+            <div class="emails__footer">
+                <p class="h6 emails__footer__title">
+                    If you did not sign up to loopscentral, <br> please ignore this mail or contact us at
+                    <a href="mailto:contact@loopscentral.com">contact@loopscentral.com</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock email_content %}
