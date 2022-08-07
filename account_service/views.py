@@ -8,6 +8,9 @@ from django.contrib.auth import logout, hashers
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import urlsafe_base64_decode
 
+# DRF YASG Imports
+from drf_yasg.utils import swagger_auto_schema
+
 # SimpleJWT Imports
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from rest_framework_simplejwt.serializers import TokenRefreshSerializer
@@ -39,6 +42,7 @@ class RegisterAPIView(views.APIView):
     serializer_class = RegisterUserSerializer
     permission_classes = [permissions.AllowAny]
     
+    @swagger_auto_schema(request_body=RegisterUserSerializer)
     def post(self, request:Request) -> Response:
         serializer = self.serializer_class(data=request.data)
         
@@ -85,6 +89,7 @@ class VerifyEmailAPIView(views.APIView):
     permission_classes = (permissions.AllowAny)
     serializer_class = UserEmailSerializer
     
+    @swagger_auto_schema(request_body=UserEmailSerializer)
     def post(self, request:Request) -> Response:
         
         serializer = self.serializer_class(data=request.data)
@@ -146,6 +151,7 @@ class ResetPasswordAPIView(views.APIView):
     permission_classes = (permissions.AllowAny)
     serializer_class = UserEmailSerializer
     
+    @swagger_auto_schema(request_body=UserEmailSerializer)
     def post(self, request:Request) -> Response:
         serializer = self.serializer_class(data=request.data)
         
@@ -192,6 +198,7 @@ class VerifyResetPasswordUidToken(views.APIView):
             )
             return Response(data=payload, status=status.HTTP_200_OK)
     
+    @swagger_auto_schema(request_body=UserResetPasswordSerializer)
     def post(self, request:Request, uidb64, token) -> Response:
         serializer = self.serializer_class(data=request.data)
         
@@ -228,6 +235,7 @@ class ChangePasswordAPIView(views.APIView):
     permission_classes = (permissions.IsAuthenticated)
     serializer_class = UserChangePasswordSerializer
     
+    @swagger_auto_schema(request_body=UserChangePasswordSerializer)
     def put(self, request:Request) -> Response:
         serializer = self.serializer_class(data=request.data)
         
