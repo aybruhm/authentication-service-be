@@ -1,6 +1,15 @@
-from typing import List
+# Typing Imports
+from typing import List, Any
+
+# Django Imports
 from django.db import models
-from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
+from django.contrib.auth.models import (
+    AbstractBaseUser, 
+    PermissionsMixin, 
+)
+
+# Account Service Imports
+from account_service.managers import UserManager
 
 
 class User(AbstractBaseUser, PermissionsMixin):
@@ -30,6 +39,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS: List[str] = ["username", "email"]
+    
+    objects: Any = UserManager
     
     class Meta:
         verbose_name_plural = "users"
