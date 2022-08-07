@@ -175,3 +175,8 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# Register custom user model
+AUTH_USER_MODEL = "account_service.AccountUser"
+# Register custom user model in admin
+REGISTER_USER_MODEL = True
