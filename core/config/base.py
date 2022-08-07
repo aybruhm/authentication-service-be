@@ -12,14 +12,10 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 
 from datetime import timedelta
 from pathlib import Path
-import environ
+from decouple import config
 import dj_database_url
 import os
 
-env = environ.Env(
-    # set casting, default value
-    DEBUG=(bool, False)
-)
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -27,15 +23,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Runtime Environment
 RUNTIME_ENVIRON = "core.config.local"  # when serving to production, change to '.production'
 
-# Take environment variables from .env file
-environ.Env.read_env(".env")
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = env("SECRET_KEY")
+SECRET_KEY = config("SECRET_KEY")
 
 
 # Application definition

@@ -8,9 +8,9 @@ https://docs.djangoproject.com/en/4.1/howto/deployment/asgi/
 """
 
 import os
+from core.config.base import RUNTIME_ENVIRON
+from django.core.wsgi import get_wsgi_application
 
-from django.core.asgi import get_asgi_application
-
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "core.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", RUNTIME_ENVIRON)
 
 application = get_asgi_application()
