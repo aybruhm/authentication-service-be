@@ -56,3 +56,7 @@ class UserLoginObtainPairSerializer(TokenObtainPairSerializer):
             status="success", message="Login successful", data=data
         )
         return payload
+    
+
+class UserEmailSerializer(serializers.Serializer):
+    email = serializers.EmailField(required=True)
