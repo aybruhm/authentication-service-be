@@ -1,8 +1,14 @@
 # Rest Framework Imports
 from rest_framework import serializers
 
+# SimpleJWT Imports
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+
 # Account Service Imports
 from account_service.models import AccountUser
+
+# Third Party Imports
+from rest_api_payload import success_response
 
 
 class RegisterUserSerializer(serializers.ModelSerializer):
@@ -10,6 +16,10 @@ class RegisterUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = AccountUser
         fields = ("username", "email", "password")
+        extra_kwargs = {
+            "password": {"write_only": True},
+            "email": {"write_only": True},
+        }
         
     def create(self, validated_data) -> AccountUser:
         
@@ -28,3 +38,21 @@ class RegisterUserSerializer(serializers.ModelSerializer):
         user.save()
         
         return user
+    
+    
+class UserLoginObtainPairSerializer(TokenObtainPairSerializer):
+    
+    def validate(self, attrs):
+        """The default result (access/refresh tokens)"""
+        data = super(UserLoginObtainPairSerializer, self).validate(attrs)
+
+        """Custom data you want to include"""
+        data.update({"username": self.user.username})
+        data.update({"email": self.user.email})
+        data.update({"id": self.user.id})
+
+        """Return custom data in the response"""
+        payload = success_response(
+            status="success", message="Login successful", data=data
+        )
+        return payload
