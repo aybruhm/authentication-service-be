@@ -3,6 +3,9 @@ from rest_framework import status, views, permissions
 from rest_framework.response import Response
 from rest_framework.request import Request
 
+# Djang Imports
+from django.contrib.auth import logout
+
 # SimpleJWT Imports
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from rest_framework_simplejwt.serializers import TokenRefreshSerializer
@@ -50,3 +53,15 @@ class RefreshLoginAPIView(TokenRefreshView):
     """Inherits TokenRefreshView from rest_framework simplejwt"""
 
     serializer_class = TokenRefreshSerializer
+    
+    
+class LogoutAPIView(views.APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def post(self, request:Request) -> Response:
+        request.session.flush()
+        logout(request)
+
+        payload = success_response(status="success", message="Logged out successful!", data={})
+        return Response(data=payload, status=status.HTTP_204_NO_CONTENT)
+    
