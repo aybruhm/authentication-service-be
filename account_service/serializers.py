@@ -60,3 +60,8 @@ class UserLoginObtainPairSerializer(TokenObtainPairSerializer):
 
 class UserEmailSerializer(serializers.Serializer):
     email = serializers.EmailField(required=True)
+    
+    
+class UserResetPasswordSerializer(serializers.Serializer):
+    new_password = serializers.Serializer(required=True)
+    repeat_new_password = serializers.Serializer(required=True)
