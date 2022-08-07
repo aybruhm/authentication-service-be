@@ -19,6 +19,8 @@ class AccountUser(AbstractBaseUser, PermissionsMixin):
     # Basic information
     firstname = models.CharField(max_length=255, help_text="What's your firstname?", blank=True, null=True)
     lastname = models.CharField(max_length=255, help_text="What's your lastname?", blank=True, null=True)
+    
+    # Required basic information
     username = models.CharField(max_length=255, help_text="What's your preferred username?", unique=True)
     email = models.EmailField(max_length=255, help_text="What's your email address?", unique=True)
     
