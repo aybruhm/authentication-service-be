@@ -12,7 +12,7 @@ from django.contrib.auth.models import (
 from account_service.managers import UserManager
 
 
-class User(AbstractBaseUser, PermissionsMixin):
+class AccountUser(AbstractBaseUser, PermissionsMixin):
     # Primary Key
     id = models.BigAutoField(primary_key=True, unique=True)
     
@@ -38,7 +38,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     date_modified = models.DateTimeField(auto_now=True)
     
     USERNAME_FIELD = "email"
-    REQUIRED_FIELDS: List[str] = ["username", "email"]
+    REQUIRED_FIELDS: List[str] = ["username"]
     
     objects: Any = UserManager
     
