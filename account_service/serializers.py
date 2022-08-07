@@ -63,5 +63,32 @@ class UserEmailSerializer(serializers.Serializer):
     
     
 class UserResetPasswordSerializer(serializers.Serializer):
-    new_password = serializers.Serializer(required=True)
-    repeat_new_password = serializers.Serializer(required=True)
+    new_password = serializers.CharField(
+        write_only=True,
+        required=True,
+        style={"input_type": "password", "placeholder": "New Password"},
+    )
+    repeat_new_password = serializers.CharField(
+        write_only=True,
+        required=True,
+        style={"input_type": "password", "placeholder": "Repeat New Password"},
+    )
+    
+
+class UserChangePasswordSerializer(serializers.Serializer):
+    email = serializers.EmailField(required=True)
+    current_password = serializers.CharField(
+        write_only=True,
+        required=True,
+        style={"input_type": "password", "placeholder": "Current Password"},
+    )
+    new_password = serializers.CharField(
+        write_only=True,
+        required=True,
+        style={"input_type": "password", "placeholder": "New Password"},
+    )
+    repeat_new_password = serializers.CharField(
+        write_only=True,
+        required=True,
+        style={"input_type": "password", "placeholder": "Repeat New Password"},
+    )
