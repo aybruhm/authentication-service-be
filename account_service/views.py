@@ -241,7 +241,7 @@ class ChangePasswordAPIView(views.APIView):
         
         if serializer.is_valid():
             
-            user = get_active_user(request=request, user=serializer.validated_data.get("email"))
+            user = get_active_user(request=request, email=serializer.validated_data.get("email"))
             current_password = serializer.validated_data.get("current_password")
             new_password = serializer.validated_data.get("new_password")
             repeat_new_password = serializer.validated_data.get("repeat_new_password")
