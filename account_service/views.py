@@ -17,9 +17,13 @@ from account_service.models import AccountUser
 from account_service.serializers import (
     RegisterUserSerializer,
     UserLoginObtainPairSerializer,
-    UserEmailSerializer
+    UserEmailSerializer,
+    UserResetPasswordSerializer
 )
-from account_service.services.emails.users import send_email_to_user
+from account_service.services.emails.users import (
+    send_email_to_user, 
+    send_reset_password_email_to_user
+)
 from account_service.services.generators.uid import generate_uid_token
 from account_service.utils import (
     get_active_user, 
@@ -35,7 +39,7 @@ class RegisterAPIView(views.APIView):
     permission_classes = [permissions.AllowAny]
     
     def post(self, request:Request) -> Response:
-        serializer = RegisterUserSerializer(data=request.data)
+        serializer = self.serializer_class(data=request.data)
         
         if serializer.is_valid():
             serializer.save()
@@ -82,12 +86,12 @@ class VerifyEmailAPIView(views.APIView):
     
     def post(self, request:Request) -> Response:
         
-        serializer = UserEmailSerializer(data=request.data)
+        serializer = self.serializer_class(data=request.data)
         
         if serializer.is_valid():
             
             # get inactive user
-            user = get_inactive_user(email=serializer.validated_data.get("email"))
+            user = get_inactive_user(request=request, email=serializer.validated_data.get("email"))
             
             # generate verification link for user
             uid, token = generate_uid_token(request=request, user=user)
@@ -135,3 +139,85 @@ class VerifyEmailUidTokenAPIView(views.APIView):
             status="error", message="Email activation link is invalid. Request again!"
         )
         return Response(data=payload, status=status.HTTP_400_BAD_REQUEST)
+    
+
+class ResetPasswordAPIView(views.APIView):
+    permission_classes = (permissions.AllowAny)
+    serializer_class = UserEmailSerializer
+    
+    def post(self, request:Request) -> Response:
+        serializer = self.serializer_class(data=request.data)
+        
+        if serializer.is_valid():
+            
+            user = get_active_user(request=request, email=serializer.validated_data.get("email"))
+        
+            # generate verification link for user
+            uid, token = generate_uid_token(request=request, user=user)
+            
+            # send email to user
+            if uid and token:
+                send_reset_password_email_to_user(request=request, user=user, uid=uid, token=token)
+            
+            payload = success_response(
+                status="success",
+                message="Password reset link has been sent to your mail inbox!",
+                data={}
+            )
+            return Response(data=payload, status=status.HTTP_202_ACCEPTED)
+        
+        payload = error_response(
+            data=payload, message=serializer.errors
+        )
+        return Response(data=payload, status=status.HTTP_400_BAD_REQUEST)
+    
+
+class VerifyResetPasswordUidToken(views.APIView):
+    permission_classes = (permissions.IsAuthenticated)
+    serializer_class = UserResetPasswordSerializer
+    
+    def get(self, request:Request, uidb64, token) -> Response:
+        try:
+            uid = urlsafe_base64_decode(uidb64).decode()
+            user = AccountUser._default_manager.get(pk=uid)
+            
+        except(TypeError, ValueError, OverflowError, AccountUser.DoesNotExist):
+            user = None
+        
+        if user is not None and default_token_generator.check_token(user, token):
+            payload = success_response(
+                status="success",
+                message="Password reset link verified!"
+            )
+            return Response(data=payload, status=status.HTTP_200_OK)
+    
+    def post(self, request:Request, uidb64, token) -> Response:
+        serializer = self.serializer_class(data=request.data)
+        
+        if serializer.is_valid():
+            new_password = serializer.validated_data.get("new_password")
+            re_new_password = serializer.validated_data.get("repeat_new_password")
+            
+            if new_password != re_new_password:
+                payload = error_response(
+                    status="error",
+                    message="Password(s) are incorrect. Please try again!"
+                )
+                return Response(data=payload, status=status.HTTP_400_BAD_REQUEST)
+            
+            # Decoding base64 to get user id
+            uid = urlsafe_base64_decode(uidb64).decode()
+            
+            # Get first user with id
+            user = AccountUser.objects.filter(id=uid).first()
+            
+            # Update user password and save to database
+            user.set_password(new_password)
+            user.save()
+            
+            payload = success_response(
+                status="success",
+                message="Password successfully changed!",
+                data={}
+            )
+            return Response(data=payload, status=status.HTTP_202_ACCEPTED)
