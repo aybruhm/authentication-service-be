@@ -13,7 +13,7 @@ from rest_api_payload import error_response
 def get_inactive_user(request:Request, email:str):
     
     try:
-        user = AccountUser.objects.filter(email=email, is_active=False).first()
+        user = AccountUser.objects.filter(email=email).first()
         return user
     except (AccountUser.DoesNotExist, Exception):
         payload = error_response(
