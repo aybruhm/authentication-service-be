@@ -24,7 +24,7 @@ urlpatterns = [
     path("logout/", LogoutAPIView.as_view(), name="logout"),
     
     # verify email
-    path("verify_email/", VerifyEmailAPIView.as_view(), name="verify_email"),
+    path("request_email_uid_token/", VerifyEmailAPIView.as_view(), name="verify_email"),
     path("verify_email/<uidb64>/<token>/", VerifyEmailUidTokenAPIView.as_view(), name="verify_uidb64_token"),
     
     # reset password
