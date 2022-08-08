@@ -31,7 +31,7 @@ Verify Email
                 </p>
 
                 <a type="button"
-                    href="http://{{ domain }}{% url 'accounts:verify-uidb64-token' uidb64=uid token=token %}"
+                    href="http://{{ domain }}{% url 'account_service:verify_uidb64_token' uidb64=uid token=token %}"
                     target="_blank" class="btn email-verification-button">
                     Verify My Email
                 </a>
