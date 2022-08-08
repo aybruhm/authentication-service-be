@@ -95,7 +95,7 @@ class RefreshLoginAPIView(TokenRefreshView):
     
     
 class LogoutAPIView(views.APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = (permissions.IsAuthenticated, )
     
     def post(self, request:Request) -> Response:
         request.session.flush()
@@ -170,7 +170,7 @@ class VerifyEmailUidTokenAPIView(views.APIView):
     
 
 class ResetPasswordAPIView(views.APIView):
-    permission_classes = (permissions.AllowAny)
+    permission_classes = (permissions.AllowAny, )
     serializer_class = UserEmailSerializer
     
     @swagger_auto_schema(request_body=UserEmailSerializer)
@@ -202,7 +202,7 @@ class ResetPasswordAPIView(views.APIView):
     
 
 class VerifyResetPasswordUidToken(views.APIView):
-    permission_classes = (permissions.IsAuthenticated)
+    permission_classes = (permissions.AllowAny, )
     serializer_class = UserResetPasswordSerializer
     
     def get(self, request:Request, uidb64, token) -> Response:
@@ -254,7 +254,7 @@ class VerifyResetPasswordUidToken(views.APIView):
         
     
 class ChangePasswordAPIView(views.APIView):
-    permission_classes = (permissions.IsAuthenticated)
+    permission_classes = (permissions.IsAuthenticated, )
     serializer_class = UserChangePasswordSerializer
     
     @swagger_auto_schema(request_body=UserChangePasswordSerializer)
