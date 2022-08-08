@@ -47,10 +47,30 @@ class RegisterAPIView(views.APIView):
         serializer = self.serializer_class(data=request.data)
         
         if serializer.is_valid():
-            serializer.save()
+            
+            # get fields from validated data
+            username = serializer.validated_data.get("username")
+            email = serializer.validated_data.get("email")
+            password = serializer.validated_data.get("password")
+            
+            # create user
+            user = AccountUser.objects.create(
+                username=username,
+                email=email,
+                password=password
+            )
+            user.set_password(password)
+            user.save()
+            
+            # generate verification link for user
+            uid, token = generate_uid_token(request=request, user=user)
+            
+            # send email to user
+            if uid and token:
+                send_email_to_user(request=request, user=user, uid=uid, token=token)
             
             payload = success_response(
-                status="success", message="User created",
+                status="success", message="User created!",
                 data=serializer.data
             )
             return Response(data=payload, status=status.HTTP_201_CREATED)
@@ -86,7 +106,7 @@ class LogoutAPIView(views.APIView):
     
     
 class VerifyEmailAPIView(views.APIView):
-    permission_classes = (permissions.AllowAny)
+    permission_classes = (permissions.AllowAny, )
     serializer_class = UserEmailSerializer
     
     @swagger_auto_schema(request_body=UserEmailSerializer)
@@ -98,6 +118,7 @@ class VerifyEmailAPIView(views.APIView):
             
             # get inactive user
             user = get_inactive_user(request=request, email=serializer.validated_data.get("email"))
+            print("USER: ", user)
             
             # generate verification link for user
             uid, token = generate_uid_token(request=request, user=user)
@@ -107,7 +128,8 @@ class VerifyEmailAPIView(views.APIView):
                 send_email_to_user(request=request, user=user, uid=uid, token=token)
             
             payload = success_response(
-                status="success", message="An email activation link has been sent to your mail inbox!"
+                status="success", message="An email activation link has been sent to your mail inbox!",
+                data={}
             )
             return Response(data=payload, status=status.HTTP_202_ACCEPTED)
 
@@ -119,12 +141,12 @@ class VerifyEmailAPIView(views.APIView):
     
 
 class VerifyEmailUidTokenAPIView(views.APIView):
-    permission_classes = (permissions.AllowAny)
+    permission_classes = (permissions.AllowAny, )
     
     def post(self, request:Request, uidb64, token) -> Response:
         try:
             uid = urlsafe_base64_decode(uidb64).decode()
-            user = AccountUser._default_manager.get(pk=uid)
+            user = AccountUser._default_manager.get(uuid=uid)
             
         except(TypeError, ValueError, OverflowError, AccountUser.DoesNotExist):
             user = None
@@ -186,7 +208,7 @@ class VerifyResetPasswordUidToken(views.APIView):
     def get(self, request:Request, uidb64, token) -> Response:
         try:
             uid = urlsafe_base64_decode(uidb64).decode()
-            user = AccountUser._default_manager.get(pk=uid)
+            user = AccountUser._default_manager.get(uuid=uid)
             
         except(TypeError, ValueError, OverflowError, AccountUser.DoesNotExist):
             user = None
