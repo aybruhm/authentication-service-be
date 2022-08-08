@@ -5,3 +5,10 @@ from core.config.base import * #noqa
 DEBUG = config("DEBUG", cast=bool)
 
 ALLOWED_HOSTS = ["*"]
+
+# Database
+# https://docs.djangoproject.com/en/4.0/ref/settings/#databases
+
+DATABASES = {
+    "default": dj_database_url.parse(config("DATABASE_URL")),
+}

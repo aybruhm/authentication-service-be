@@ -1,5 +1,6 @@
 # Typing Imports
 from typing import List, Any
+from uuid import uuid4
 
 # Django Imports
 from django.db import models
@@ -15,6 +16,7 @@ from account_service.managers import UserManager
 class AccountUser(AbstractBaseUser, PermissionsMixin):
     # Primary Key
     id = models.BigAutoField(primary_key=True, unique=True)
+    uuid = models.UUIDField(default=uuid4, unique=True)
     
     # Basic information
     firstname = models.CharField(max_length=255, help_text="What's your firstname?", blank=True, null=True)
@@ -42,7 +44,7 @@ class AccountUser(AbstractBaseUser, PermissionsMixin):
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS: List[str] = ["username"]
     
-    objects: Any = UserManager
+    objects: Any = UserManager()
     
     class Meta:
         verbose_name_plural = "users"
@@ -58,7 +60,7 @@ class AccountUser(AbstractBaseUser, PermissionsMixin):
         ]
         
     def __str__(self) -> str:
-        return "{} {}".format(self.firstname, self.lastname)
+        return self.username
     
     def is_user_active(self) -> bool:
         if self.is_active:

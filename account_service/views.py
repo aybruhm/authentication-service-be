@@ -7,6 +7,8 @@ from rest_framework.request import Request
 from django.contrib.auth import logout, hashers
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import urlsafe_base64_decode
+from django.http import HttpRequest, HttpResponse
+from django.shortcuts import render
 
 # DRF YASG Imports
 from drf_yasg.utils import swagger_auto_schema
@@ -47,10 +49,30 @@ class RegisterAPIView(views.APIView):
         serializer = self.serializer_class(data=request.data)
         
         if serializer.is_valid():
-            serializer.save()
+            
+            # get fields from validated data
+            username = serializer.validated_data.get("username")
+            email = serializer.validated_data.get("email")
+            password = serializer.validated_data.get("password")
+            
+            # create user
+            user = AccountUser.objects.create(
+                username=username,
+                email=email,
+                password=password
+            )
+            user.set_password(password)
+            user.save()
+            
+            # generate verification link for user
+            uid, token = generate_uid_token(request=request, user=user)
+            
+            # send email to user
+            if uid and token:
+                send_email_to_user(request=request, user=user, uid=uid, token=token)
             
             payload = success_response(
-                status="success", message="User created",
+                status="success", message="User created!",
                 data=serializer.data
             )
             return Response(data=payload, status=status.HTTP_201_CREATED)
@@ -75,7 +97,7 @@ class RefreshLoginAPIView(TokenRefreshView):
     
     
 class LogoutAPIView(views.APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = (permissions.IsAuthenticated, )
     
     def post(self, request:Request) -> Response:
         request.session.flush()
@@ -86,7 +108,7 @@ class LogoutAPIView(views.APIView):
     
     
 class VerifyEmailAPIView(views.APIView):
-    permission_classes = (permissions.AllowAny)
+    permission_classes = (permissions.AllowAny, )
     serializer_class = UserEmailSerializer
     
     @swagger_auto_schema(request_body=UserEmailSerializer)
@@ -98,6 +120,7 @@ class VerifyEmailAPIView(views.APIView):
             
             # get inactive user
             user = get_inactive_user(request=request, email=serializer.validated_data.get("email"))
+            print("USER: ", user)
             
             # generate verification link for user
             uid, token = generate_uid_token(request=request, user=user)
@@ -107,7 +130,8 @@ class VerifyEmailAPIView(views.APIView):
                 send_email_to_user(request=request, user=user, uid=uid, token=token)
             
             payload = success_response(
-                status="success", message="An email activation link has been sent to your mail inbox!"
+                status="success", message="An email activation link has been sent to your mail inbox!",
+                data={}
             )
             return Response(data=payload, status=status.HTTP_202_ACCEPTED)
 
@@ -119,12 +143,12 @@ class VerifyEmailAPIView(views.APIView):
     
 
 class VerifyEmailUidTokenAPIView(views.APIView):
-    permission_classes = (permissions.AllowAny)
+    permission_classes = (permissions.AllowAny, )
     
     def post(self, request:Request, uidb64, token) -> Response:
         try:
             uid = urlsafe_base64_decode(uidb64).decode()
-            user = AccountUser._default_manager.get(pk=uid)
+            user = AccountUser._default_manager.get(uuid=uid)
             
         except(TypeError, ValueError, OverflowError, AccountUser.DoesNotExist):
             user = None
@@ -148,7 +172,7 @@ class VerifyEmailUidTokenAPIView(views.APIView):
     
 
 class ResetPasswordAPIView(views.APIView):
-    permission_classes = (permissions.AllowAny)
+    permission_classes = (permissions.AllowAny, )
     serializer_class = UserEmailSerializer
     
     @swagger_auto_schema(request_body=UserEmailSerializer)
@@ -174,19 +198,19 @@ class ResetPasswordAPIView(views.APIView):
             return Response(data=payload, status=status.HTTP_202_ACCEPTED)
         
         payload = error_response(
-            data=payload, message=serializer.errors
+            status="error", message=serializer.errors
         )
         return Response(data=payload, status=status.HTTP_400_BAD_REQUEST)
     
 
 class VerifyResetPasswordUidToken(views.APIView):
-    permission_classes = (permissions.IsAuthenticated)
+    permission_classes = (permissions.AllowAny, )
     serializer_class = UserResetPasswordSerializer
     
     def get(self, request:Request, uidb64, token) -> Response:
         try:
             uid = urlsafe_base64_decode(uidb64).decode()
-            user = AccountUser._default_manager.get(pk=uid)
+            user = AccountUser._default_manager.get(uuid=uid)
             
         except(TypeError, ValueError, OverflowError, AccountUser.DoesNotExist):
             user = None
@@ -194,7 +218,8 @@ class VerifyResetPasswordUidToken(views.APIView):
         if user is not None and default_token_generator.check_token(user, token):
             payload = success_response(
                 status="success",
-                message="Password reset link verified!"
+                message="Password reset link verified!",
+                data={}
             )
             return Response(data=payload, status=status.HTTP_200_OK)
     
@@ -217,7 +242,7 @@ class VerifyResetPasswordUidToken(views.APIView):
             uid = urlsafe_base64_decode(uidb64).decode()
             
             # Get first user with id
-            user = AccountUser.objects.filter(id=uid).first()
+            user = AccountUser.objects.filter(uuid=uid).first()
             
             # Update user password and save to database
             user.set_password(new_password)
@@ -232,7 +257,7 @@ class VerifyResetPasswordUidToken(views.APIView):
         
     
 class ChangePasswordAPIView(views.APIView):
-    permission_classes = (permissions.IsAuthenticated)
+    permission_classes = (permissions.IsAuthenticated, )
     serializer_class = UserChangePasswordSerializer
     
     @swagger_auto_schema(request_body=UserChangePasswordSerializer)
@@ -279,3 +304,24 @@ class ChangePasswordAPIView(views.APIView):
             status="error", message=serializer.errors
         )
         return Response(data=payload, status=status.HTTP_400_BAD_REQUEST)
+    
+    
+# Email Template Views
+def verify_email_template(request: HttpRequest) -> HttpResponse:
+    email_context = {
+        'user': request.user,
+        'domain': "http://" + request.get_host(),
+        'uid': "6sbcshbcsk9=ec-eckem",
+        'token': "wh8xHhbUbyGvBYBUBNm",
+    }
+    return render(request, "emails/verify-email-template.html", email_context)
+
+
+def reset_password_email_template(request: HttpRequest) -> HttpResponse:
+    email_context = {
+        'user': request.user,
+        'domain': "http://" + request.get_host(),
+        'uid': "6sbcshbcsk9=ec-eckem",
+        'token': "wh8xHhbUbyGvBYBUBNm",
+    }
+    return render(request, "emails/reset-password-email-template.html", email_context)

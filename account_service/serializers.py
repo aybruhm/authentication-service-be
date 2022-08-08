@@ -1,5 +1,9 @@
+# Typing Imports
+from typing import Dict
+
 # Rest Framework Imports
 from rest_framework import serializers
+from rest_framework.request import Request
 
 # SimpleJWT Imports
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
@@ -18,26 +22,23 @@ class RegisterUserSerializer(serializers.ModelSerializer):
         fields = ("username", "email", "password")
         extra_kwargs = {
             "password": {"write_only": True},
-            "email": {"write_only": True},
         }
         
-    def create(self, validated_data) -> AccountUser:
+    def validate(self, attrs):
         
-        # get fields from validated data
-        username = validated_data.get("username")
-        email = validated_data.get("email")
-        password = validated_data.get("password")
+        # Get email and username from attrs
+        email = attrs.get("email")
+        username = attrs.get("username")
         
-        # create user
-        user = AccountUser.objects.create(
-            username=username,
-            email=email,
-            password=password
-        )
-        user.set_password(password)
-        user.save()
+        """Check if user with email exists"""
+        if AccountUser.objects.filter(email=email).exists():
+            raise serializers.ValidationError("Email exits already. Please try again!")
         
-        return user
+        """Checks if user with username exists"""
+        if AccountUser.objects.filter(username=username).exists():
+            raise serializers.ValidationError("Username exits already. Please try again!")
+        
+        return super().validate(attrs)
     
     
 class UserLoginObtainPairSerializer(TokenObtainPairSerializer):
@@ -60,6 +61,17 @@ class UserLoginObtainPairSerializer(TokenObtainPairSerializer):
 
 class UserEmailSerializer(serializers.Serializer):
     email = serializers.EmailField(required=True)
+    
+    def validate(self, attrs):
+        
+        # Get email from attrs
+        email = attrs.get("email")
+        
+        """Check if email does not exists"""
+        if not AccountUser.objects.filter(email=email).exists():
+            raise serializers.ValidationError("Email does not exits!")
+        
+        return super().validate(attrs)
     
     
 class UserResetPasswordSerializer(serializers.Serializer):
@@ -92,3 +104,15 @@ class UserChangePasswordSerializer(serializers.Serializer):
         required=True,
         style={"input_type": "password", "placeholder": "Repeat New Password"},
     )
+    
+    def validate(self, attrs):
+        
+        # Get email from attrs
+        email = attrs.get("email")
+        
+        """Check if email does not exists"""
+        if not AccountUser.objects.filter(email=email).exists():
+            raise serializers.ValidationError("Email does not exits!")
+        
+        return super().validate(attrs)
+    
