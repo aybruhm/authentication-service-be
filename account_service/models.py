@@ -42,7 +42,7 @@ class AccountUser(AbstractBaseUser, PermissionsMixin):
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS: List[str] = ["username"]
     
-    objects: Any = UserManager
+    objects: Any = UserManager()
     
     class Meta:
         verbose_name_plural = "users"
