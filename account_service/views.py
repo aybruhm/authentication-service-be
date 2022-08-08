@@ -196,7 +196,7 @@ class ResetPasswordAPIView(views.APIView):
             return Response(data=payload, status=status.HTTP_202_ACCEPTED)
         
         payload = error_response(
-            data=payload, message=serializer.errors
+            status="error", message=serializer.errors
         )
         return Response(data=payload, status=status.HTTP_400_BAD_REQUEST)
     
@@ -216,7 +216,8 @@ class VerifyResetPasswordUidToken(views.APIView):
         if user is not None and default_token_generator.check_token(user, token):
             payload = success_response(
                 status="success",
-                message="Password reset link verified!"
+                message="Password reset link verified!",
+                data={}
             )
             return Response(data=payload, status=status.HTTP_200_OK)
     
@@ -239,7 +240,7 @@ class VerifyResetPasswordUidToken(views.APIView):
             uid = urlsafe_base64_decode(uidb64).decode()
             
             # Get first user with id
-            user = AccountUser.objects.filter(id=uid).first()
+            user = AccountUser.objects.filter(uuid=uid).first()
             
             # Update user password and save to database
             user.set_password(new_password)
