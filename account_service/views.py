@@ -7,6 +7,8 @@ from rest_framework.request import Request
 from django.contrib.auth import logout, hashers
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import urlsafe_base64_decode
+from django.http import HttpRequest, HttpResponse
+from django.shortcuts import render
 
 # DRF YASG Imports
 from drf_yasg.utils import swagger_auto_schema
@@ -302,3 +304,24 @@ class ChangePasswordAPIView(views.APIView):
             status="error", message=serializer.errors
         )
         return Response(data=payload, status=status.HTTP_400_BAD_REQUEST)
+    
+    
+# Email Template Views
+def verify_email_template(request: HttpRequest) -> HttpResponse:
+    email_context = {
+        'user': request.user,
+        'domain': "http://" + request.get_host(),
+        'uid': "6sbcshbcsk9=ec-eckem",
+        'token': "wh8xHhbUbyGvBYBUBNm",
+    }
+    return render(request, "emails/verify-email-template.html", email_context)
+
+
+def reset_password_email_template(request: HttpRequest) -> HttpResponse:
+    email_context = {
+        'user': request.user,
+        'domain': "http://" + request.get_host(),
+        'uid': "6sbcshbcsk9=ec-eckem",
+        'token': "wh8xHhbUbyGvBYBUBNm",
+    }
+    return render(request, "emails/reset-password-email-template.html", email_context)
