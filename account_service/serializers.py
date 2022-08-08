@@ -12,7 +12,7 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from account_service.models import AccountUser
 
 # Third Party Imports
-from rest_api_payload import success_response, error_response
+from rest_api_payload import success_response
 
 
 class RegisterUserSerializer(serializers.ModelSerializer):
@@ -26,21 +26,17 @@ class RegisterUserSerializer(serializers.ModelSerializer):
         
     def validate(self, attrs):
         
+        # Get email and username from attrs
+        email = attrs.get("email")
+        username = attrs.get("username")
+        
         """Check if user with email exists"""
-        if AccountUser.objects.filter(email=attrs["email"]).exists():
-            payload = error_response(
-                status="error",
-                message="Email exits already. Please try again!"
-            )
-            raise serializers.ValidationError(payload)
+        if AccountUser.objects.filter(email=email).exists():
+            raise serializers.ValidationError("Email exits already. Please try again!")
         
         """Checks if user with username exists"""
-        if AccountUser.objects.filter(username=attrs["username"]).exist():
-            payload = error_response(
-                status="error",
-                message="Username exits already. Please try again!"
-            )
-            raise serializers.ValidationError(payload)
+        if AccountUser.objects.filter(username=username).exists():
+            raise serializers.ValidationError("Username exits already. Please try again!")
         
         return super().validate(attrs)
     
@@ -65,6 +61,17 @@ class UserLoginObtainPairSerializer(TokenObtainPairSerializer):
 
 class UserEmailSerializer(serializers.Serializer):
     email = serializers.EmailField(required=True)
+    
+    def validate(self, attrs):
+        
+        # Get email from attrs
+        email = attrs.get("email")
+        
+        """Check if email does not exists"""
+        if not AccountUser.objects.filter(email=email).exists():
+            raise serializers.ValidationError("Email does not exits!")
+        
+        return super().validate(attrs)
     
     
 class UserResetPasswordSerializer(serializers.Serializer):
