@@ -176,8 +176,8 @@
         .container-xl,
         .container-xxl {
             width: 100%;
-            padding-right: var(--mdb-gutter-x, .75rem);
-            padding-left: var(--mdb-gutter-x, .75rem);
+            padding-right: var(--mdb-gutter-x, .25rem);
+            padding-left: var(--mdb-gutter-x, .25rem);
             margin-right: auto;
             margin-left: auto
         }
@@ -282,8 +282,7 @@
         }
 
         section.emails__template {
-            padding: 40px 0px;
-            height: 100vh;
+            padding: 10px 0px;
             background-color: rgb(250, 250, 255);
         }
 
@@ -319,6 +318,7 @@
         div.emails__card div.emails__body p.h6 {
             padding-top: 20px;
             line-height: 24px;
+            padding-bottom: 30px;
         }
 
         div.emails__card div.emails__body a.email-verification-button {
@@ -327,6 +327,7 @@
             border-radius: 50px;
             color: #ffffff;
             padding: 15px 40px;
+            text-decoration: none;
         }
 
         div.emails__card div.emails__footer {
@@ -359,6 +360,10 @@
 
             h2.emails__title {
                 font-size: 22px;
+            }
+
+            div.emails__card div.emails__body p.h6 {
+                padding-bottom: 30px;
             }
         }
     </style>
