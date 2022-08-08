@@ -32,7 +32,7 @@ def send_email_to_user(request: HttpRequest, user:AccountUser, uid:str, token:st
     text_content = strip_tags(html_content)
 
     # # Initialize a single email message which can be send to multiple recipients
-    msg = EmailMultiAlternatives(mail_subject, text_content, settings.EMAIL_HOST_USER, [user.email])
+    msg = EmailMultiAlternatives(mail_subject, text_content, settings.DEFAULT_FROM_EMAIL, [user.email])
     msg.attach_alternative(html_content, "text/html")
     msg.send()
 
@@ -54,6 +54,6 @@ def send_reset_password_email_to_user(request: HttpRequest, user:AccountUser, ui
     text_content = strip_tags(html_content)
     
     # # Initialize a single email message which can be send to multiple recipients
-    msg = EmailMultiAlternatives(mail_subject, text_content, settings.EMAIL_HOST_USER, [user.email])
+    msg = EmailMultiAlternatives(mail_subject, text_content, settings.DEFAULT_FROM_EMAIL, [user.email])
     msg.attach_alternative(html_content, "text/html")
     msg.send()
