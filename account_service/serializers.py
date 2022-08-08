@@ -104,3 +104,15 @@ class UserChangePasswordSerializer(serializers.Serializer):
         required=True,
         style={"input_type": "password", "placeholder": "Repeat New Password"},
     )
+    
+    def validate(self, attrs):
+        
+        # Get email from attrs
+        email = attrs.get("email")
+        
+        """Check if email does not exists"""
+        if not AccountUser.objects.filter(email=email).exists():
+            raise serializers.ValidationError("Email does not exits!")
+        
+        return super().validate(attrs)
+    
