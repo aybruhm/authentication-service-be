@@ -1,5 +1,9 @@
+# Typing Imports
+from typing import Dict
+
 # Rest Framework Imports
 from rest_framework import serializers
+from rest_framework.request import Request
 
 # SimpleJWT Imports
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
@@ -8,7 +12,7 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from account_service.models import AccountUser
 
 # Third Party Imports
-from rest_api_payload import success_response
+from rest_api_payload import success_response, error_response
 
 
 class RegisterUserSerializer(serializers.ModelSerializer):
@@ -18,26 +22,27 @@ class RegisterUserSerializer(serializers.ModelSerializer):
         fields = ("username", "email", "password")
         extra_kwargs = {
             "password": {"write_only": True},
-            "email": {"write_only": True},
         }
         
-    def create(self, validated_data) -> AccountUser:
+    def validate(self, attrs):
         
-        # get fields from validated data
-        username = validated_data.get("username")
-        email = validated_data.get("email")
-        password = validated_data.get("password")
+        """Check if user with email exists"""
+        if AccountUser.objects.filter(email=attrs["email"]).exists():
+            payload = error_response(
+                status="error",
+                message="Email exits already. Please try again!"
+            )
+            raise serializers.ValidationError(payload)
         
-        # create user
-        user = AccountUser.objects.create(
-            username=username,
-            email=email,
-            password=password
-        )
-        user.set_password(password)
-        user.save()
+        """Checks if user with username exists"""
+        if AccountUser.objects.filter(username=attrs["username"]).exist():
+            payload = error_response(
+                status="error",
+                message="Username exits already. Please try again!"
+            )
+            raise serializers.ValidationError(payload)
         
-        return user
+        return super().validate(attrs)
     
     
 class UserLoginObtainPairSerializer(TokenObtainPairSerializer):
