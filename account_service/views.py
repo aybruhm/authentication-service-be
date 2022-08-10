@@ -17,6 +17,7 @@ from drf_yasg.utils import swagger_auto_schema
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from rest_framework_simplejwt.serializers import TokenRefreshSerializer
 from account_service.models import AccountUser
+from account_service.permissions import CanSuspendUserPermission
 
 # Account Service Imports
 from account_service.serializers import (
@@ -305,6 +306,25 @@ class ChangePasswordAPIView(views.APIView):
         )
         return Response(data=payload, status=status.HTTP_400_BAD_REQUEST)
     
+
+class SuspendUserAPIView(views.APIView):
+    permission_classes = (CanSuspendUserPermission, )
+    
+    def put(self, request:Request, user_email:str) -> Response:
+        user = get_active_user(request=request, email=user_email)
+        
+        if user:
+            user.is_suspended = True
+            user.save()
+            
+            payload = success_response(
+                status="success",
+                message="User has been suspended!",
+                data={}
+            )
+        
+        return Response(data=payload, status=status.HTTP_202_ACCEPTED)
+
     
 # Email Template Views
 def verify_email_template(request: HttpRequest) -> HttpResponse:

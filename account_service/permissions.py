@@ -5,8 +5,8 @@ from rest_framework.request import Request
 
 class CanSuspendUserPermission(permissions.BasePermission):
     
-    edit_methods = "You can not suspend a creator if you are not our staff!"
-    method = ("PUT", "PATCH")
+    message = "You can not suspend a user if you are not our staff!"
+    edit_methods = ("PUT", "PATCH")
     
     def has_permission(self, request:Request, view:Any) -> bool:
         if request.user.is_authenticated and request.user.is_staff:

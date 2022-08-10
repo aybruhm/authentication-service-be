@@ -12,6 +12,7 @@ from account_service.views import (
     ResetPasswordAPIView, 
     VerifyResetPasswordUidToken,
     ChangePasswordAPIView,
+    SuspendUserAPIView,
     
     verify_email_template,
     reset_password_email_template
@@ -36,6 +37,9 @@ urlpatterns = [
     
     # change password
     path("change_password/", ChangePasswordAPIView.as_view(), name="change_password"),
+    
+    # suspend user
+path("suspend_user/<str:user_email>/", SuspendUserAPIView.as_view(), name="suspend_user"),
     
     # Email Template URLs
     path("verify_email_template/", verify_email_template),
