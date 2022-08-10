@@ -39,7 +39,7 @@ urlpatterns = [
     path("change_password/", ChangePasswordAPIView.as_view(), name="change_password"),
     
     # suspend user
-    path("suspend_user/<str:email>/", SuspendUserAPIView.as_view(), name="suspend_user"),
+path("suspend_user/<str:user_email>/", SuspendUserAPIView.as_view(), name="suspend_user"),
     
     # Email Template URLs
     path("verify_email_template/", verify_email_template),
