@@ -184,3 +184,6 @@ EMAIL_HOST_USER = "loopscentraltech@gmail.com"
 EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD")
 
 DEFAULT_FROM_EMAIL = 'noreply@loopscentral.com'
+
+
+SITE_ID = 1
