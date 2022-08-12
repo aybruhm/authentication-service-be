@@ -25,13 +25,17 @@ from account_service.serializers import (
     UserLoginObtainPairSerializer,
     UserEmailSerializer,
     UserResetPasswordSerializer,
-    UserChangePasswordSerializer
+    UserChangePasswordSerializer,
+    GoogleOAuth2Serializer
 )
 from account_service.services.emails.users import (
     send_email_to_user, 
     send_reset_password_email_to_user
 )
 from account_service.services.generators.uid import generate_uid_token
+from account_service.services.oauth2.google import google_validate_id_token
+from account_service.services.oauth2.jwt import jwt_login
+from account_service.services.users.records import user_get_me, user_get_or_create
 from account_service.utils import (
     get_active_user, 
     get_inactive_user
@@ -324,6 +328,28 @@ class SuspendUserAPIView(views.APIView):
             )
         
         return Response(data=payload, status=status.HTTP_202_ACCEPTED)
+    
+    
+class GoogleOAuth2LoginAPIView(views.APIView):
+    serializer_class = GoogleOAuth2Serializer
+    
+    @swagger_auto_schema(request_body=GoogleOAuth2Serializer)
+    def post(self, request:Request, *args, **kwargs) -> Response:
+        
+        id_token = request.headers.get('id_token')
+        google_validate_id_token(id_token=id_token)
+        
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        # We use get-or-create logic here for the sake of the example.
+        # We don't have a sign-up flow.
+        user, _ = user_get_or_create(**serializer.validated_data)
+
+        response = Response(data=user_get_me(user=user))
+        response = jwt_login(response=response, user=user)
+
+        return response
 
     
 # Email Template Views

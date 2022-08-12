@@ -116,3 +116,8 @@ class UserChangePasswordSerializer(serializers.Serializer):
         
         return super().validate(attrs)
     
+
+class GoogleOAuth2Serializer(serializers.Serializer):
+    email = serializers.EmailField(required=True)
+    first_name = serializers.CharField(required=False, default='')
+    last_name = serializers.CharField(required=False, default='')
