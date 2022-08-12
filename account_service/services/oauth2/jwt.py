@@ -1,13 +1,15 @@
-from django.http import HttpResponse
+# Rest Framework Imports
+from rest_framework.response import Response
 
+# SimpleJWT Imports
 from rest_framework_simplejwt.settings import api_settings
-from rest_framework_simplejwt.compat import set_cookie_with_token
 
+# Account Service Models
 from account_service.models import AccountUser
-from users.services import user_record_login
+from account_service.services.users.records import user_record_login
 
 
-def jwt_login(*, response: HttpResponse, user: AccountUser) -> HttpResponse:
+def jwt_login(*, response: Response, user: AccountUser) -> Response:
     jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
     jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
 
@@ -15,7 +17,11 @@ def jwt_login(*, response: HttpResponse, user: AccountUser) -> HttpResponse:
     token = jwt_encode_handler(payload)
 
     if api_settings.JWT_AUTH_COOKIE:
-        set_cookie_with_token(response, api_settings.JWT_AUTH_COOKIE, token)
+        response.set_cookie(
+            api_settings.JWT_AUTH_COOKIE,
+            token,
+            httponly=True
+        )
 
     user_record_login(user=user)
 
