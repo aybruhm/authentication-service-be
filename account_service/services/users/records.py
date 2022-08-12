@@ -11,6 +11,9 @@ from django.core.management.utils import get_random_secret_key
 # Users Timestamps Imports
 from account_service.services.users.timestamps import get_now
 
+# Third Party Imports
+from rest_api_payload import success_response
+
 
 def user_record_login(*, user: AccountUser) -> AccountUser:
     user.last_login = get_now()
@@ -42,12 +45,16 @@ def user_create(email, password=None, **extra_fields) -> AccountUser:
 
 
 def user_get_me(*, user: AccountUser):
-    return {
-        'id': user.id,
-        'uuid': user.uuid,
-        'name': user.fullname,
-        'email': user.email
-    }
+    payload = success_response(
+        status="success", message="User authenticated with Google!",
+        data = {
+            'id': user.id,
+            'uuid': user.uuid,
+            'name': user.fullname,
+            'email': user.email
+        }
+    )
+    return payload
 
 
 def jwt_response_payload_handler(token, user=None, request=None):
