@@ -41,6 +41,22 @@ def user_create(email, password=None, **extra_fields) -> AccountUser:
     return user
 
 
+def user_get_me(*, user: AccountUser):
+    return {
+        'id': user.id,
+        'uuid': user.uuid,
+        'name': user.fullname,
+        'email': user.email
+    }
+
+
+def jwt_response_payload_handler(token, user=None, request=None):
+    return {
+        'token': token,
+        'me': user_get_me(user=user),
+    }
+
+
 @transaction.atomic
 def user_get_or_create(*, email: str, **extra_data) -> Tuple[AccountUser, bool]:
     user = AccountUser.objects.filter(email=email).first()
