@@ -187,3 +187,6 @@ DEFAULT_FROM_EMAIL = 'noreply@loopscentral.com'
 
 
 SITE_ID = 1
+
+# GOOGLE_OAUTH2_CLIENT_ID Definition
+GOOGLE_OAUTH2_CLIENT_ID = config("GOOGLE_OAUTH2_CLIENT_ID")
