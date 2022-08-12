@@ -13,6 +13,7 @@ from account_service.views import (
     VerifyResetPasswordUidToken,
     ChangePasswordAPIView,
     SuspendUserAPIView,
+    GoogleOAuth2LoginAPIView,
     
     verify_email_template,
     reset_password_email_template
@@ -25,6 +26,7 @@ urlpatterns = [
     path("register/", RegisterAPIView.as_view(), name="register"),
     path("login/", LoginAPIView.as_view(), name="login"),
     path("login/refresh/", RefreshLoginAPIView.as_view(), name="login_refresh"),
+    path("google_oauth2_login/", GoogleOAuth2LoginAPIView.as_view(), name="google_oauth2_login"),
     path("logout/", LogoutAPIView.as_view(), name="logout"),
     
     # verify email
@@ -39,7 +41,7 @@ urlpatterns = [
     path("change_password/", ChangePasswordAPIView.as_view(), name="change_password"),
     
     # suspend user
-path("suspend_user/<str:user_email>/", SuspendUserAPIView.as_view(), name="suspend_user"),
+    path("suspend_user/<str:user_email>/", SuspendUserAPIView.as_view(), name="suspend_user"),
     
     # Email Template URLs
     path("verify_email_template/", verify_email_template),
