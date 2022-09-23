@@ -77,13 +77,13 @@ class RegisterAPIView(views.APIView):
                 send_email_to_user(request=request, user=user, uid=uid, token=token)
             
             payload = success_response(
-                status="success", message="User created!",
+                status=True, message="User created!",
                 data=serializer.data
             )
             return Response(data=payload, status=status.HTTP_201_CREATED)
         
         payload = error_response(
-            status="error", message=serializer.errors
+            status=False, message=serializer.errors
         )
         return Response(data=payload, status=status.HTTP_400_BAD_REQUEST)
     
@@ -108,7 +108,7 @@ class LogoutAPIView(views.APIView):
         request.session.flush()
         logout(request)
 
-        payload = success_response(status="success", message="Logged out successful!", data={})
+        payload = success_response(status=True, message="Logged out successful!", data={})
         return Response(data=payload, status=status.HTTP_204_NO_CONTENT)
     
     
@@ -135,13 +135,13 @@ class VerifyEmailAPIView(views.APIView):
                 send_email_to_user(request=request, user=user, uid=uid, token=token)
             
             payload = success_response(
-                status="success", message="An email activation link has been sent to your mail inbox!",
+                status=True, message="An email activation link has been sent to your mail inbox!",
                 data={}
             )
             return Response(data=payload, status=status.HTTP_202_ACCEPTED)
 
         payload = error_response(
-            status="error",
+            status=False,
             message=serializer.errors
         )
         return Response(data=payload, status=status.HTTP_400_BAD_REQUEST)
@@ -164,14 +164,14 @@ class VerifyEmailUidTokenAPIView(views.APIView):
             user.save()
             
             payload = success_response(
-                status="success",
+                status=True,
                 message="Email activated!",
                 data={}
             )
             return Response(data=payload, status=status.HTTP_202_ACCEPTED)
         
         payload = error_response(
-            status="error", message="Email activation link is invalid. Request again!"
+            status=False, message="Email activation link is invalid. Request again!"
         )
         return Response(data=payload, status=status.HTTP_400_BAD_REQUEST)
     
@@ -196,14 +196,14 @@ class ResetPasswordAPIView(views.APIView):
                 send_reset_password_email_to_user(request=request, user=user, uid=uid, token=token)
             
             payload = success_response(
-                status="success",
+                status=True,
                 message="Password reset link has been sent to your mail inbox!",
                 data={}
             )
             return Response(data=payload, status=status.HTTP_202_ACCEPTED)
         
         payload = error_response(
-            status="error", message=serializer.errors
+            status=False, message=serializer.errors
         )
         return Response(data=payload, status=status.HTTP_400_BAD_REQUEST)
     
@@ -222,7 +222,7 @@ class VerifyResetPasswordUidToken(views.APIView):
         
         if user is not None and default_token_generator.check_token(user, token):
             payload = success_response(
-                status="success",
+                status=True,
                 message="Password reset link verified!",
                 data={}
             )
@@ -238,7 +238,7 @@ class VerifyResetPasswordUidToken(views.APIView):
             
             if new_password != re_new_password:
                 payload = error_response(
-                    status="error",
+                    status=False,
                     message="Password(s) are incorrect. Please try again!"
                 )
                 return Response(data=payload, status=status.HTTP_400_BAD_REQUEST)
@@ -254,7 +254,7 @@ class VerifyResetPasswordUidToken(views.APIView):
             user.save()
             
             payload = success_response(
-                status="success",
+                status=True,
                 message="Password successfully changed!",
                 data={}
             )
@@ -300,13 +300,13 @@ class ChangePasswordAPIView(views.APIView):
 
             
             payload = success_response(
-                status="success", message="Password changed successfully!",
+                status=True, message="Password changed successfully!",
                 data={}
             )
             return Response(data=payload, status=status.HTTP_202_ACCEPTED)
         
         payload = error_response(
-            status="error", message=serializer.errors
+            status=False, message=serializer.errors
         )
         return Response(data=payload, status=status.HTTP_400_BAD_REQUEST)
     
@@ -322,7 +322,7 @@ class SuspendUserAPIView(views.APIView):
             user.save()
             
             payload = success_response(
-                status="success",
+                status=True,
                 message="User has been suspended!",
                 data={}
             )
