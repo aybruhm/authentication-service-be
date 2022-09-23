@@ -2,7 +2,7 @@
 from django.urls import path
 
 # Account Service Imports
-from account_service.views import (
+from authentication_service.views import (
     RegisterAPIView, 
     LoginAPIView, 
     RefreshLoginAPIView,
@@ -19,7 +19,7 @@ from account_service.views import (
     reset_password_email_template
 )
 
-app_name = "account_service"
+app_name = "authentication_service"
 
 urlpatterns = [
     # main auth

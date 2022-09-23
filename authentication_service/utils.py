@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework import status
 
 # Account Service Imports
-from account_service.models import AccountUser
+from authentication_service.models import AccountUser
 
 # Third Party Imports
 from rest_api_payload import error_response

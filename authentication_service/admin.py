@@ -3,7 +3,7 @@ from django.contrib import admin
 from django.conf import settings
 
 # Account Service Imports
-from account_service.models import AccountUser
+from authentication_service.models import AccountUser
 
 
 # register user if set in the settings, otherwise don't.

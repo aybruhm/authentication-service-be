@@ -11,7 +11,7 @@ from django.conf import settings
 from typing import NoReturn
 
 # Accounts Imports
-from account_service.models import AccountUser
+from authentication_service.models import AccountUser
 
 
 

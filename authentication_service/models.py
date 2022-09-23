@@ -10,7 +10,7 @@ from django.contrib.auth.models import (
 )
 
 # Account Service Imports
-from account_service.managers import UserManager
+from authentication_service.managers import UserManager
 
 
 class AccountUser(AbstractBaseUser, PermissionsMixin):

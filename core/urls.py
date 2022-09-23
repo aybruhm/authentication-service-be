@@ -13,11 +13,11 @@ from rest_framework import permissions
 # Schema Definition
 schema_view = get_schema_view(
    openapi.Info(
-      title="Loopscentral Internal Account Service API",
+      title="Authentication Service Backend",
       default_version='v1',
-      description="Authentication service backend apis for loopscentral platform",
+      description="Responsible for handling storage of users and authentication of their identities.",
       terms_of_service="https://www.google.com/policies/terms/",
-      contact=openapi.Contact(email="loopscentraltech@gmail.com"),
+      contact=openapi.Contact(email="israelvictory87@gmail.com"),
    ),
    public=True,
    permission_classes=(permissions.AllowAny,),
@@ -27,10 +27,10 @@ urlpatterns = [
    path("admin/", admin.site.urls),
    
    # api version 1 routes
-   path("api/v1/", include("account_service.urls")),
+   path("api/v1/", include("authentication_service.urls")),
    
    # api documentation routes
    re_path(r'^swagger(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0), name='schema-json'),
-   re_path(r'^swagger/$', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
-   re_path(r'^redoc/$', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
+   re_path(r'^api-doc-swagger/$', schema_view.with_ui('swagger', cache_timeout=0), name='api_doc_swagger'),
+   re_path(r'^api-doc-redoc/$', schema_view.with_ui('redoc', cache_timeout=0), name='api_doc_redoc'),
 ]

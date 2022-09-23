@@ -16,11 +16,11 @@ from drf_yasg.utils import swagger_auto_schema
 # SimpleJWT Imports
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from rest_framework_simplejwt.serializers import TokenRefreshSerializer
-from account_service.models import AccountUser
-from account_service.permissions import CanSuspendUserPermission
+from authentication_service.models import AccountUser
+from authentication_service.permissions import CanSuspendUserPermission
 
 # Account Service Imports
-from account_service.serializers import (
+from authentication_service.serializers import (
     RegisterUserSerializer,
     UserLoginObtainPairSerializer,
     UserEmailSerializer,
@@ -28,15 +28,15 @@ from account_service.serializers import (
     UserChangePasswordSerializer,
     GoogleOAuth2Serializer
 )
-from account_service.services.emails.users import (
+from authentication_service.services.emails.users import (
     send_email_to_user, 
     send_reset_password_email_to_user
 )
-from account_service.services.generators.uid import generate_uid_token
-from account_service.services.oauth2.google import google_validate_id_token
-from account_service.services.oauth2.jwt import jwt_login
-from account_service.services.users.records import user_get_me, user_get_or_create
-from account_service.utils import (
+from authentication_service.services.generators.uid import generate_uid_token
+from authentication_service.services.oauth2.google import google_validate_id_token
+from authentication_service.services.oauth2.jwt import jwt_login
+from authentication_service.services.users.records import user_get_me, user_get_or_create
+from authentication_service.utils import (
     get_active_user, 
     get_inactive_user
 )

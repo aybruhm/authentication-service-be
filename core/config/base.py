@@ -42,7 +42,7 @@ LOCAL_APPS = [
 ]
 
 OWN_APPS = [
-    "account_service.apps.AccountServiceConfig",
+    "authentication_service.apps.AuthenticationServiceConfig",
 ]
 
 THIRD_PARTY_APPS = [
@@ -171,7 +171,7 @@ STATIC_URL = "static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Register custom user model
-AUTH_USER_MODEL = "account_service.AccountUser"
+AUTH_USER_MODEL = "authentication_service.AccountUser"
 # Register custom user model in admin
 REGISTER_USER_MODEL = True
 
@@ -180,10 +180,10 @@ EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = "smtp.gmail.com"
 EMAIL_USE_TLS = True
 EMAIL_PORT = 587
-EMAIL_HOST_USER = "loopscentraltech@gmail.com"
+EMAIL_HOST_USER = "admin@gmail.com"
 EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD")
 
-DEFAULT_FROM_EMAIL = 'noreply@loopscentral.com'
+DEFAULT_FROM_EMAIL = 'noreply@admin.com'
 
 
 SITE_ID = 1

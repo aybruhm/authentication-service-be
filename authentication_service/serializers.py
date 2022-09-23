@@ -9,7 +9,7 @@ from rest_framework.request import Request
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 # Account Service Imports
-from account_service.models import AccountUser
+from authentication_service.models import AccountUser
 
 # Third Party Imports
 from rest_api_payload import success_response

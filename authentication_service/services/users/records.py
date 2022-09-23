@@ -2,14 +2,14 @@
 from typing import Tuple
 
 # Account Service Imports
-from account_service.models import AccountUser
+from authentication_service.models import AccountUser
 
 # Django Imports
 from django.db import transaction
 from django.core.management.utils import get_random_secret_key
 
 # Users Timestamps Imports
-from account_service.services.users.timestamps import get_now
+from authentication_service.services.users.timestamps import get_now
 
 # Third Party Imports
 from rest_api_payload import success_response

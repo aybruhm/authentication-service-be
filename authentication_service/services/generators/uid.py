@@ -5,7 +5,7 @@ from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import urlsafe_base64_encode
 
 # Accounts Imports
-from account_service.models import AccountUser
+from authentication_service.models import AccountUser
 
 
 def generate_uid_token(request:HttpRequest, user:AccountUser):

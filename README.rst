@@ -17,7 +17,7 @@ Quick start
 
     path('auth/', include('authentication_service.urls')),
 
-3. Run ``python manage.py migrate`` to create the account_service models.
+3. Run ``python manage.py migrate`` to create the authentication_service models.
 
 4. Start the development server.
 

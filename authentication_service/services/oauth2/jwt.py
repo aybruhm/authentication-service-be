@@ -5,8 +5,8 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.settings import api_settings
 
 # Account Service Models
-from account_service.models import AccountUser
-from account_service.services.users.records import user_record_login
+from authentication_service.models import AccountUser
+from authentication_service.services.users.records import user_record_login
 
 
 def jwt_login(*, response: Response, user: AccountUser) -> Response:
