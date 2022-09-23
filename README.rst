@@ -1,21 +1,21 @@
 ==========================
-Account Service Backend
+Authentication Service Backend
 ==========================
-Account service is a Django app responsible for handling authentication for loopscentral.
+Authentication service backend is responsible for handling storage of users and authentication of their identities.
 
 Quick start
 -----------
 
-1. Add "account_service" to your INSTALLED_APPS setting like this::
+1. Add "authentication_service" to your INSTALLED_APPS setting like this::
 
     INSTALLED_APPS = [
         ...
-        'account_service',
+        'authentication_service',
     ]
 
-2. Include the account_service URLconf in your project urls.py like this::
+2. Include the authentication_service URLconf in your project urls.py like this::
 
-    path('auth/', include('account_service.urls')),
+    path('auth/', include('authentication_service.urls')),
 
 3. Run ``python manage.py migrate`` to create the account_service models.
 
