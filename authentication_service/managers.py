@@ -6,14 +6,22 @@ class UserManager(BaseUserManager):
     
     def create_user(
         self,
+        firstname: str,
+        lastname: str,
         email: str,
         username: str,
         password=None,
     ):
         """Creates normal user"""
+        
+        if firstname is None:
+            raise TypeError("User must have a firstname")
+        
+        if lastname is None:
+            raise TypeError("User must have a last name")
 
         if email is None:
-            raise TypeError("Users must have an email address")
+            raise TypeError("User must have an email address")
 
         if username is None:
             raise TypeError("User must have a username")
@@ -32,6 +40,8 @@ class UserManager(BaseUserManager):
 
     def create_superuser(
         self,
+        firstname: str,
+        lastname: str,
         username: str,
         email: str,
         password=None,
@@ -45,6 +55,8 @@ class UserManager(BaseUserManager):
             raise TypeError("Superusers must have a password.")
 
         user = self.create_user(
+            firstname=firstname,
+            lastname=lastname,
             email=email,
             username=username,
             password=password,
