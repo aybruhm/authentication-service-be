@@ -55,17 +55,11 @@ class RegisterAPIView(views.APIView):
         
         if serializer.is_valid():
             
-            # get fields from validated data
-            username = serializer.validated_data.get("username")
-            email = serializer.validated_data.get("email")
+            # get passowrd from validated data
             password = serializer.validated_data.get("password")
             
             # create user
-            user = AccountUser.objects.create(
-                username=username,
-                email=email,
-                password=password
-            )
+            user = AccountUser.objects.create(**serializer.validated_data)
             user.set_password(password)
             user.save()
             
