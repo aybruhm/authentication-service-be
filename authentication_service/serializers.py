@@ -48,6 +48,8 @@ class UserLoginObtainPairSerializer(TokenObtainPairSerializer):
         data = super(UserLoginObtainPairSerializer, self).validate(attrs)
 
         """Custom data you want to include"""
+        data.update({"firstname": self.user.firstname})
+        data.update({"lastname": self.user.lastname})
         data.update({"username": self.user.username})
         data.update({"email": self.user.email})
         data.update({"id": self.user.id})
