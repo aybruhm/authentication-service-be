@@ -1,4 +1,6 @@
+# Django Imports
 from django.contrib.auth.models import BaseUserManager
+from django.db import transaction
 
 
 class UserManager(BaseUserManager):
@@ -54,16 +56,17 @@ class UserManager(BaseUserManager):
         if password is None:
             raise TypeError("Superusers must have a password.")
 
-        user = self.create_user(
-            firstname=firstname,
-            lastname=lastname,
-            email=email,
-            username=username,
-            password=password,
-        )
-        user.is_superuser = True
-        user.is_staff = True
-        user.is_active = True
-        user.save()
+        with transaction.atomic():
+            user = self.create_user(
+                firstname=firstname,
+                lastname=lastname,
+                email=email,
+                username=username,
+                password=password,
+            )
+            user.is_superuser = True
+            user.is_staff = True
+            user.is_active = True
+            user.save()
 
-        return user
+            return user
