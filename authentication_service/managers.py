@@ -29,8 +29,8 @@ class UserManager(BaseUserManager):
             raise TypeError("User must have a username")
 
         user = self.model(
-            firstname="",
-            lastname="",
+            firstname=firstname,
+            lastname=lastname,
             username=username,
             email=self.normalize_email(email),
             phone_number="",
