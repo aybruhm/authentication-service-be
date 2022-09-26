@@ -13,6 +13,6 @@ class CanSuspendUserPermission(permissions.BasePermission):
             return True
         
     def has_object_permission(self, request:Request, view:Any) -> bool:
-        if request.method not in self.edit_methods and request.user.has_perm("user.can_suspend_user"):
+        if request.user.has_perm("user.can_suspend_user"):
             return True
         return False
