@@ -390,7 +390,7 @@ class SuspendUserAPIView(views.APIView):
         """
         user = get_active_user(request=request, email=user_email)
         
-        if user:
+        if user is not None:
             user.is_suspended = True
             user.save(update_fields=["is_suspended"])
             
@@ -401,7 +401,7 @@ class SuspendUserAPIView(views.APIView):
             )
             return Response(data=payload, status=status.HTTP_202_ACCEPTED)
         
-        payload = error_response(status=False, message="User does not exist.")
+        payload = error_response(status=False, message="User account is not activated.")
         return Response(data=payload, status=status.HTTP_400_BAD_REQUEST)
     
     
