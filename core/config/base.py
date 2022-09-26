@@ -176,13 +176,12 @@ AUTH_USER_MODEL = "authentication_service.AccountUser"
 REGISTER_USER_MODEL = True
 
 # Email Backend Definition
-# EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-# EMAIL_HOST = "smtp.gmail.com"
-# EMAIL_USE_TLS = True
-# EMAIL_PORT = 587
-# EMAIL_HOST_USER = "admin@gmail.com"
-# EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD")
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+EMAIL_HOST_USER = "admin@gmail.com"
+EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD")
 
 DEFAULT_FROM_EMAIL = 'noreply@admin.com'
 
@@ -191,3 +190,9 @@ SITE_ID = 1
 
 # GOOGLE_OAUTH2_CLIENT_ID Definition
 GOOGLE_OAUTH2_CLIENT_ID = config("GOOGLE_OAUTH2_CLIENT_ID")
+
+# Authentication Service Definition
+AUTHENTICATION_SERVICE = {
+    "site_name": "Authentication Service",
+    "contact_email": "contact@authentication-service.com"
+}
