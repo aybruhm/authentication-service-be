@@ -20,6 +20,9 @@ client = APIClient()
 
 
 class BaseTestCase(APITestCase):
+    """
+    The class is a subclass of the APITestCase class.
+    """
     
     def setUp(self) -> None:
         self.active_user = AccountUser.objects.get_or_create(
@@ -73,11 +76,13 @@ class BaseTestCase(APITestCase):
     
 
 class RegisterTestCase(BaseTestCase):
-    """Test case to register user"""
+    """
+    Test case to register user
+    """
     
     def test_valid_register(self):
         """
-        Ensure we can create a new user object.
+        Test case to ensure we can create a new user object.
         """
         url = reverse("authentication_service:register")
         response = client.post(url, data=self.valid_payload, format="json")
@@ -86,22 +91,34 @@ class RegisterTestCase(BaseTestCase):
     
     def test_invalid_register(self):
         """
-        Ensure we can't create a new user object with invalid data.
+        Test case to ensurue we can't create 
+        a new user object with invalid data.
         """
         url = reverse("authentication_service:register")
         response = client.post(url, data=self.invalid_payload, format="json")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         
 
-class VerifyEmailTestCase(BaseTestCase):
+class RequestVerifyEmailTestCase(BaseTestCase):
+    """
+    Test case to request / verify a user email address
+    """
     
     def test_valid_verify_email(self):
+        """
+        Test case to ensure that the user can 
+        verify their account with the valid payload.
+        """
         
         url = reverse("authentication_service:verify_email")
         response = client.post(url, data=self.valid_email_payload, format="json")
         self.assertEqual(response.status_code, status.HTTP_202_ACCEPTED)
         
     def test_invalid_verify_email(self):
+        """
+        Test case to ensure that user cannot verify
+        their account with an invalid payload.
+        """
         
         url = reverse("authentication_service:verify_email")
         response = client.post(url, data=self.invalid_email_payload, format="json")
@@ -115,14 +132,25 @@ class VerifyEmailTestCase(BaseTestCase):
         
 
 class ResetPasswordTestCase(BaseTestCase):
+    """
+    Test case to reset a user password
+    """
     
     def test_valid_reset_password(self):
+        """
+        Test case to ensure that the user can
+        reset their password with a valid payload.
+        """
         
         url = reverse("authentication_service:reset_password")
         response = client.post(url, data=self.valid_email_payload, format="json")
         self.assertEqual(response.status_code, status.HTTP_202_ACCEPTED)
     
     def test_invalid_reset_password(self):
+        """
+        Test case to ensure that the user cannot
+        reset their password with an invalid payload.
+        """
         
         url = reverse("authentication_service:reset_password")
         response = client.post(url, data=self.invalid_email_payload, format="json")
@@ -136,22 +164,39 @@ class ResetPasswordTestCase(BaseTestCase):
     
     
 class ChangePasswordTestCase(BaseTestCase):
+    """
+    Test case to change a user password
+    """
     
     def test_valid_change_password(self):
+        """
+        Test case to ensure that the user can 
+        change their password with a valid payload.
+        """
         
         url = reverse("authentication_service:change_password")
         response = client.put(url, data=self.valid_pwd_payload, format="json", **self.bearer_token)
         self.assertEqual(response.status_code, status.HTTP_202_ACCEPTED)
     
     def test_invalid_change_password(self):
+        """
+        Test case to ensure that the user cannot
+        change their password with an invalid payload.
+        """
         url = reverse("authentication_service:change_password")
         response = client.put(url, data=self.invalid_pwd_payload, format="json", **self.bearer_token)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
     
     
 class SuspendUserTestCase(BaseTestCase):
+    """
+    Test case to suspend a user account
+    """
     
     def test_valid_suspend_user(self):
+        """
+        Test case to suspend a user.
+        """
         
         url = reverse("authentication_service:suspend_user", args=["abram@email.com"])
         response = client.put(url, **self.bearer_token)
