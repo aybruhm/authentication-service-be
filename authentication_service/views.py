@@ -5,6 +5,7 @@ from rest_framework.request import Request
 
 # Djang Imports
 from django.contrib.auth import logout, hashers
+from django.conf import settings
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import urlsafe_base64_decode
 from django.http import HttpRequest, HttpResponse
@@ -55,7 +56,7 @@ class RegisterAPIView(views.APIView):
         
         if serializer.is_valid():
             
-            # get passowrd from validated data
+            # get password from validated data
             password = serializer.validated_data.get("password")
             
             # create user
@@ -119,7 +120,6 @@ class VerifyEmailAPIView(views.APIView):
             
             # get inactive user
             user = get_inactive_user(request=request, email=serializer.validated_data.get("email"))
-            print("USER: ", user)
             
             # generate verification link for user
             uid, token = generate_uid_token(request=request, user=user)
@@ -353,6 +353,8 @@ def verify_email_template(request: HttpRequest) -> HttpResponse:
         'domain': "http://" + request.get_host(),
         'uid': "6sbcshbcsk9=ec-eckem",
         'token': "wh8xHhbUbyGvBYBUBNm",
+        'site_name': settings.AUTHENTICATION_SERVICE["site_name"],
+        'contact_email': settings.AUTHENTICATION_SERVICE["contact_email"]
     }
     return render(request, "emails/verify-email-template.html", email_context)
 
@@ -363,5 +365,6 @@ def reset_password_email_template(request: HttpRequest) -> HttpResponse:
         'domain': "http://" + request.get_host(),
         'uid': "6sbcshbcsk9=ec-eckem",
         'token': "wh8xHhbUbyGvBYBUBNm",
+        'contact_email': settings.AUTHENTICATION_SERVICE["contact_email"]
     }
     return render(request, "emails/reset-password-email-template.html", email_context)
