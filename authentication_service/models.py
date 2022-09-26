@@ -62,10 +62,5 @@ class AccountUser(AbstractBaseUser, PermissionsMixin):
     def __str__(self) -> str:
         return self.username
     
-    def is_user_active(self) -> bool:
-        if self.is_active:
-            return True
-        return False
-    
     def fullname(self) -> str:
-        return "{} {}".format(self.firstname, self.lastname)
+        return f"{self.firstname} {self.lastname}"
