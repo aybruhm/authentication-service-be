@@ -46,6 +46,11 @@ class UserLoginObtainPairSerializer(TokenObtainPairSerializer):
     def validate(self, attrs):
         """The default result (access/refresh tokens)"""
         data = super(UserLoginObtainPairSerializer, self).validate(attrs)
+        
+        # check if user is not active
+        if self.user.is_active is False:
+            # send activation link to user email 
+            return ...
 
         """Custom data you want to include"""
         data.update({"firstname": self.user.firstname})
