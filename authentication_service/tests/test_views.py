@@ -201,6 +201,16 @@ class SuspendUserTestCase(BaseTestCase):
         url = reverse("authentication_service:suspend_user", args=["abram@email.com"])
         response = client.put(url, **self.bearer_token)
         self.assertEqual(response.status_code, status.HTTP_202_ACCEPTED)
+        
+    def test_invalid_suspend_user(self):
+        """
+        Test case to ensure that a user cannot
+        suspend a user with a wrong email address.
+        """
+        
+        url = reverse("authentication_service:suspend_user", args=["abram@email.in"])
+        response = client.put(url, **self.bearer_token)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
     
     
 class GoogleOAuthLoginTestCase(BaseTestCase):
