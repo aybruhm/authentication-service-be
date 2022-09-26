@@ -149,19 +149,16 @@ class ChangePasswordTestCase(BaseTestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
     
     
-class SuspendUserTestCase(APITestCase):
-    
-    def setUp(self) -> None:
-        return super().setUp()
+class SuspendUserTestCase(BaseTestCase):
     
     def test_valid_suspend_user(self):
-        return ...
+        
+        url = reverse("authentication_service:suspend_user", args=["abram@email.com"])
+        response = client.put(url, **self.bearer_token)
+        self.assertEqual(response.status_code, status.HTTP_202_ACCEPTED)
     
-    def test_invalid_suspend_user(self):
-        return ...
     
-    
-class GoogleOAuthLoginTestCase(APITestCase):
+class GoogleOAuthLoginTestCase(BaseTestCase):
     
     def test_google_oauth_login(self):
         return ...
