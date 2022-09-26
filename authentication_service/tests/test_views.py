@@ -19,20 +19,17 @@ import json
 client = APIClient()
 
 
-class JWTTestCase(APITestCase):
-    @property
-    def bearer_token(self):
-        """
-        Get access token for user
-        """
-        user = AccountUser.objects.get(email="abram@email.com")
-        refresh = RefreshToken.for_user(user)
-        return refresh.access_token
-
-class RegisterTestCase(APITestCase):
-    """Test case to register user"""
+class BaseTestCase(APITestCase):
     
     def setUp(self) -> None:
+        self.active_user = AccountUser.objects.get_or_create(
+            firstname = "Abraham",
+            lastname = "Israel",
+            username = "israelabraham",
+            email = "israelabraham@email.com",
+            password = "someawfully_strongpassword_2022",
+            is_active = True
+        )[0]
         self.valid_payload = {
             "firstname": "Abraham",
             "lastname": "Israel",
@@ -47,6 +44,24 @@ class RegisterTestCase(APITestCase):
             "email": "",
             "password": "someawfully_strongpassword_2022"
         }
+        self.valid_email_payload = {
+            "email": "israelabraham@email.com"
+        }
+        self.invalid_email_payload = {
+            "email": "victory@email.com"
+        }
+        
+    @property
+    def bearer_token(self):
+        """
+        Get access token for user
+        """
+        user = AccountUser.objects.get(email="israelabraham@email.com")
+        refresh = RefreshToken.for_user(user)
+        return refresh.access_token
+
+class RegisterTestCase(BaseTestCase):
+    """Test case to register user"""
     
     def test_valid_register(self):
         """
@@ -66,37 +81,22 @@ class RegisterTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         
 
-class VerifyEmailTestCase(APITestCase):
+class VerifyEmailTestCase(BaseTestCase):
     
-    def setUp(self) -> None:
-        self.active_user = AccountUser.objects.get_or_create(
-            firstname = "Abraham",
-            lastname = "Israel",
-            username = "abram",
-            email = "abram@email.com",
-            password = "someawfully_strongpassword_2022"
-        )[0]
-        self.valid_payload = {
-            "email": "abram@email.com"
-        }
-        self.invalid_payload = {
-            "email": "victory@email.com"
-        }
-        
     def test_valid_verify_email(self):
         
         url = reverse("authentication_service:verify_email")
-        response = client.post(url, data=self.valid_payload, format="json")
+        response = client.post(url, data=self.valid_email_payload, format="json")
         self.assertEqual(response.status_code, status.HTTP_202_ACCEPTED)
         
     def test_invalid_verify_email(self):
         
         url = reverse("authentication_service:verify_email")
-        response = client.post(url, data=self.invalid_payload, format="json")
+        response = client.post(url, data=self.invalid_email_payload, format="json")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         
 
-class ResetPasswordTestCase(APITestCase):
+class ResetPasswordTestCase(BaseTestCase):
     
     def setUp(self) -> None:
         return super().setUp()
