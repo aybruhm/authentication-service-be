@@ -3,7 +3,6 @@ from typing import Dict
 
 # Rest Framework Imports
 from rest_framework import serializers
-from rest_framework.request import Request
 
 # SimpleJWT Imports
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
@@ -12,7 +11,7 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from authentication_service.models import AccountUser
 
 # Third Party Imports
-from rest_api_payload import success_response
+from rest_api_payload import success_response, error_response
 
 
 class RegisterUserSerializer(serializers.ModelSerializer):
@@ -49,8 +48,22 @@ class UserLoginObtainPairSerializer(TokenObtainPairSerializer):
         
         # check if user is not active
         if self.user.is_active is False:
-            # send activation link to user email 
-            return ...
+            
+            payload = error_response(
+                status=False,
+                message="Account not activated. Kindly request for an activation link."
+            )
+            return payload
+        
+        # check if user is suspended
+        if self.user.is_suspended is True:
+            
+            payload = success_response(
+                status=True,
+                message="You have been suspended.",
+                data={}
+            )
+            return payload
 
         """Custom data you want to include"""
         data.update({"firstname": self.user.firstname})
@@ -61,7 +74,7 @@ class UserLoginObtainPairSerializer(TokenObtainPairSerializer):
 
         """Return custom data in the response"""
         payload = success_response(
-            status="success", message="Login successful", data=data
+            status=True, message="Login successful", data=data
         )
         return payload
     
