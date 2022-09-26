@@ -25,6 +25,8 @@ def send_email_to_user(request: HttpRequest, user:AccountUser, uid:str, token:st
         'domain': current_site.domain,
         'uid': uid,
         'token': token,
+        'site_name': settings.AUTHENTICATION_SERVICE["site_name"],
+        'contact_email': settings.AUTHENTICATION_SERVICE["contact_email"]
     }
     
     # Parse html to string
@@ -47,6 +49,8 @@ def send_reset_password_email_to_user(request: HttpRequest, user:AccountUser, ui
         'domain': current_site.domain,
         'uid': uid,
         'token': token,
+        'site_name': settings.AUTHENTICATION_SERVICE["site_name"],
+        'contact_email': settings.AUTHENTICATION_SERVICE["contact_email"]
     }
     
     # Parse html to string
