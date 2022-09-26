@@ -12,9 +12,9 @@ Verify Email
     <div class="emails__card">
 
         <div class="emails__header">
-            <img src="https://loopscentral.netlify.app/assets/images/email-arrived.png" alt="email-sent-svg"
+            <img src="{% static 'images/email-arrived.png' %}" alt="email-sent-svg"
                 class="img-responsive emails__image">
-            <h2 class="emails__title">Welcome to Loopscentral</h2>
+            <h2 class="emails__title">Welcome to {{ site_name }}</h2>
         </div>
 
         {% autoescape off %}
@@ -25,7 +25,7 @@ Verify Email
             </p>
 
             <p class="h6">
-                Thank you for signing up on Loopscentral. To continue using your account, kindly verify
+                Thank you for signing up on {{ site_name }}. To continue using your account, kindly verify
                 your email address by clicking the "Verify My Email" button below.
             </p>
 
@@ -39,8 +39,8 @@ Verify Email
 
         <div class="emails__footer">
             <p class="h6 emails__footer__title">
-                If you did not sign up to loopscentral, <br> please ignore this mail or contact us at
-                <a href="mailto:contact@loopscentral.com">contact@loopscentral.com</a>
+                If you did not sign up to {{ site_name }}, <br> please ignore this mail or contact us at
+                <a href="mailto:{{ contact_email }}">{{ contact_email }}</a>
             </p>
         </div>
     </div>
