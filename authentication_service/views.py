@@ -129,7 +129,8 @@ class VerifyEmailAPIView(views.APIView):
                 send_email_to_user(request=request, user=user, uid=uid, token=token)
             
             payload = success_response(
-                status=True, message="An email activation link has been sent to your mail inbox!",
+                status=True, 
+                message="An email activation link has been sent to your mail inbox!",
                 data={}
             )
             return Response(data=payload, status=status.HTTP_202_ACCEPTED)
@@ -290,11 +291,12 @@ class ChangePasswordAPIView(views.APIView):
             if password_message is True:
                 user.password = new_password
                 user.set_password(new_password)
-                user.save()
+                user.save(update_fields=["password"])
 
             
             payload = success_response(
-                status=True, message="Password changed successfully!",
+                status=True, 
+                message="Password changed successfully!",
                 data={}
             )
             return Response(data=payload, status=status.HTTP_202_ACCEPTED)
@@ -313,7 +315,7 @@ class SuspendUserAPIView(views.APIView):
         
         if user:
             user.is_suspended = True
-            user.save()
+            user.save(update_fields=["is_suspended"])
             
             payload = success_response(
                 status=True,
