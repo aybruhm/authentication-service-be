@@ -6,4 +6,5 @@ from django.utils import timezone
 
 
 def get_now() -> datetime:
+    """The current time"""
     return timezone.now()
