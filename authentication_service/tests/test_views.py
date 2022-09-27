@@ -25,19 +25,30 @@ class BaseTestCase(APITestCase):
     """
     
     def setUp(self) -> None:
+        # active and inactive user
         self.active_user = AccountUser.objects.get_or_create(
             firstname = "Abraham",
             lastname = "Israel",
             username = "israelabraham",
             email = "israelabraham@email.com",
             password = "someawfully_strongpassword_2022",
-            is_active = True
+            is_active = True,
+            is_staff = True
         )[0]
+        self.inactive_user = AccountUser.objects.get_or_create(
+            firstname = "Dan",
+            lastname = "Odin",
+            username = "danodin",
+            email = "dpoxo@email.com",
+            password = "someawfully_strongpassword_2022"
+        )[0]
+        
+        # valid and invalid payload
         self.valid_payload = {
-            "firstname": "Abraham",
-            "lastname": "Israel",
+            "firstname": "Victory",
+            "lastname": "Abraham",
             "username": "abram",
-            "email": "abram@email.com",
+            "email": "abraham@email.com",
             "password": "someawfully_strongpassword_2022"
         }
         self.invalid_payload = {
@@ -47,12 +58,16 @@ class BaseTestCase(APITestCase):
             "email": "",
             "password": "someawfully_strongpassword_2022"
         }
+        
+        # valid and invalid email payload
         self.valid_email_payload = {
-            "email": "israelabraham@email.com"
+            "email": "dpoxo@email.com"
         }
         self.invalid_email_payload = {
             "email": "victory@email.com"
         }
+        
+        # valid and invalid password payload
         self.valid_pwd_payload = {
             "email": "israelabraham@email.com",
             "current_password": "someawfully_strongpassword_2022",
@@ -110,7 +125,7 @@ class RequestVerifyEmailTestCase(BaseTestCase):
         verify their account with the valid payload.
         """
         
-        url = reverse("authentication_service:verify_email")
+        url = reverse("authentication_service:request_email_token")
         response = client.post(url, data=self.valid_email_payload, format="json")
         self.assertEqual(response.status_code, status.HTTP_202_ACCEPTED)
         
@@ -120,7 +135,7 @@ class RequestVerifyEmailTestCase(BaseTestCase):
         their account with an invalid payload.
         """
         
-        url = reverse("authentication_service:verify_email")
+        url = reverse("authentication_service:request_email_token")
         response = client.post(url, data=self.invalid_email_payload, format="json")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         
@@ -141,6 +156,10 @@ class ResetPasswordTestCase(BaseTestCase):
         Test case to ensure that the user can
         reset their password with a valid payload.
         """
+        
+        # update inactive user
+        self.inactive_user.is_active = True
+        self.inactive_user.save()
         
         url = reverse("authentication_service:reset_password")
         response = client.post(url, data=self.valid_email_payload, format="json")
@@ -198,7 +217,11 @@ class SuspendUserTestCase(BaseTestCase):
         Test case to suspend a user.
         """
         
-        url = reverse("authentication_service:suspend_user", args=["abram@email.com"])
+        # update inactive user
+        self.inactive_user.is_active = True
+        self.inactive_user.save()
+        
+        url = reverse("authentication_service:suspend_user", args=["dpoxo@email.com"])
         response = client.put(url, **self.bearer_token)
         self.assertEqual(response.status_code, status.HTTP_202_ACCEPTED)
         
