@@ -47,7 +47,7 @@ setup(
         'Topic :: Software Development :: Libraries :: Application Frameworks',
         'Topic :: Software Development :: Libraries :: Python Modules'
     ],
-    python_requires=">=3.7",
+    python_requires=">=3.8",
     install_requires=[
         "django>=2.2",
         "djangorestframework",
