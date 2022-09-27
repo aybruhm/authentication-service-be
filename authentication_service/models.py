@@ -16,7 +16,7 @@ from authentication_service.managers import UserManager
 class AccountUser(AbstractBaseUser, PermissionsMixin):
     # Primary Key
     id = models.BigAutoField(primary_key=True, unique=True)
-    uuid = models.UUIDField(default=uuid4, unique=True)
+    uuid = models.UUIDField(default=uuid4, unique=True, editable=False)
     
     # Basic information
     firstname = models.CharField(max_length=255, help_text="What's your firstname?", blank=True, null=True)
