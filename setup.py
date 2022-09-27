@@ -13,7 +13,7 @@ setup(
     version = '0.0.1',
     packages = find_packages(),
     include_package_data = True,
-    license = 'MIT License',
+    license = 'CC0 1.0 Universal Public Domain Dedication',
     description = '🔐 Handles storage of users and authentication of their identities.',
     long_description = README,
     long_description_content_type='text/markdown',
