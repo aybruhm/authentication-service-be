@@ -1,17 +1,17 @@
-==========================
-Authentication Service Backend
-==========================
-Authentication service backend is responsible for handling storage of users and authentication of their identities.
+# Authentication Service Backend
 
-Quick start
------------
+A django (rest) authentication service that handles storage of users and authentication of their identities.
 
-1. Add "authentication_service" to your INSTALLED_APPS setting like this::
+## Quick start
 
+1. Add "authentication_service" to your INSTALLED_APPS setting like this:
+
+    ```python
     INSTALLED_APPS = [
         ...
         'authentication_service',
     ]
+    ```
 
 2. Include the authentication_service URLconf in your project urls.py like this::
 
@@ -21,4 +21,4 @@ Quick start
 
 4. Start the development server.
 
-5. Visit http://127.0.0.1:8000/auth/
+5. Visit ```http://127.0.0.1:8000/auth/```
