@@ -17,7 +17,7 @@ schema_view = get_schema_view(
    openapi.Info(
       title="Authentication Service Backend",
       default_version='v1',
-      description="Responsible for handling storage of users and authentication of their identities.",
+      description="Handles storage of users and authentication of their identities.",
       terms_of_service="https://www.google.com/policies/terms/",
       contact=openapi.Contact(email="israelvictory87@gmail.com"),
    ),
