@@ -1,6 +1,3 @@
-# Typing Imports
-from typing import Dict
-
 # Rest Framework Imports
 from rest_framework import serializers
 
