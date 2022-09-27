@@ -8,6 +8,8 @@ on:
 
 env:
   SECRET_KEY: some-incredible-djang-secret-key-)
+  EMAIL_HOST_PASSWORD: somehost@email.com
+  GOOGLE_OAUTH2_CLIENT_ID: some-google-oauth-client-id
 
 jobs:
   build:
