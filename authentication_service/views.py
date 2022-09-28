@@ -80,14 +80,13 @@ class RegisterAPIView(views.APIView):
                 send_email_to_user(request=request, user=user, uid=uid, token=token)
             
             payload = success_response(
-                status=True, message="User created!",
+                status=True, 
+                message="An activation link has just been sent to the provided email address!",
                 data=serializer.data
             )
             return Response(data=payload, status=status.HTTP_201_CREATED)
         
-        payload = error_response(
-            status=False, message=serializer.errors
-        )
+        payload = error_response(status=False, message=serializer.errors)
         return Response(data=payload, status=status.HTTP_400_BAD_REQUEST)
     
 
@@ -141,7 +140,14 @@ class RequestEmailUidTokenAPIView(views.APIView):
         if serializer.is_valid():
             
             # get inactive user
-            user = get_inactive_user(request=request, email=serializer.validated_data.get("email"))
+            user = get_inactive_user(
+                request=request, 
+                email=serializer.validated_data.get("email")
+            )
+            
+            if user is None:
+                payload = error_response(status=False, message="User does not exist.")
+                return Response(data=payload, status=status.HTTP_404_NOT_FOUND)
             
             # generate verification link for user
             uid, token = generate_uid_token(request=request, user=user)
@@ -152,7 +158,7 @@ class RequestEmailUidTokenAPIView(views.APIView):
             
             payload = success_response(
                 status=True, 
-                message="An email activation link has been sent to your mail inbox!",
+                message="An activation link has just been sent to the provided email address!",
                 data={}
             )
             return Response(data=payload, status=status.HTTP_202_ACCEPTED)
@@ -224,6 +230,10 @@ class ResetPasswordAPIView(views.APIView):
                 request=request, 
                 email=serializer.validated_data.get("email")
             )
+            
+            if user is None:
+                payload = error_response(status=False, message="User does not exist.")
+                return Response(data=payload, status=status.HTTP_404_NOT_FOUND)
         
             # generate verification link for user
             uid, token = generate_uid_token(request=request, user=user)
@@ -273,6 +283,9 @@ class VerifyResetPasswordUidToken(views.APIView):
                 data={}
             )
             return Response(data=payload, status=status.HTTP_200_OK)
+        
+        payload = error_response(status=False, message="Password reset link invalid!")
+        return Response(data=payload, status=status.HTTP_400_BAD_REQUEST)
     
     @swagger_auto_schema(request_body=UserResetPasswordSerializer)
     def post(self, request:Request, uidb64, token) -> Response:
@@ -293,11 +306,6 @@ class VerifyResetPasswordUidToken(views.APIView):
         
         if serializer.is_valid():
             new_password = serializer.validated_data.get("new_password")
-            re_new_password = serializer.validated_data.get("repeat_new_password")
-            
-            if new_password != re_new_password:
-                payload = error_response(status=False, message="Password incorrect. Please try again!")
-                return Response(data=payload, status=status.HTTP_400_BAD_REQUEST)
             
             # Decoding base64 to get user id
             uid = urlsafe_base64_decode(uidb64).decode()
@@ -305,16 +313,24 @@ class VerifyResetPasswordUidToken(views.APIView):
             # Get first user with id
             user = AccountUser.objects.filter(uuid=uid).first()
             
-            # Update user password and save to database
-            user.set_password(new_password)
-            user.save()
+            if user is not None:
             
-            payload = success_response(
-                status=True,
-                message="Password successfully changed!",
-                data={}
-            )
-            return Response(data=payload, status=status.HTTP_202_ACCEPTED)
+                # Update user password and save to database
+                user.set_password(new_password)
+                user.save()
+                
+                payload = success_response(
+                    status=True,
+                    message="Password successfully changed!",
+                    data={}
+                )
+                return Response(data=payload, status=status.HTTP_202_ACCEPTED)
+            
+            payload = error_response(status=False, message="User does not exist!")
+            return Response(data=payload, status=status.HTTP_404_NOT_FOUND)
+        
+        payload = error_response(status=False, message=serializer.errors)
+        return Response(data=payload, status=status.HTTP_400_BAD_REQUEST)
         
     
 class ChangePasswordAPIView(views.APIView):
@@ -401,8 +417,8 @@ class SuspendUserAPIView(views.APIView):
             )
             return Response(data=payload, status=status.HTTP_202_ACCEPTED)
         
-        payload = error_response(status=False, message="User account is not activated.")
-        return Response(data=payload, status=status.HTTP_400_BAD_REQUEST)
+        payload = error_response(status=False, message="User does not exist.")
+        return Response(data=payload, status=status.HTTP_404_NOT_FOUND)
     
     
 class GoogleOAuth2LoginAPIView(views.APIView):
