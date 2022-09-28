@@ -145,10 +145,6 @@ class RequestEmailUidTokenAPIView(views.APIView):
                 email=serializer.validated_data.get("email")
             )
             
-            if user is None:
-                payload = error_response(status=False, message="User does not exist.")
-                return Response(data=payload, status=status.HTTP_404_NOT_FOUND)
-            
             # generate verification link for user
             uid, token = generate_uid_token(request=request, user=user)
             
@@ -230,10 +226,6 @@ class ResetPasswordAPIView(views.APIView):
                 request=request, 
                 email=serializer.validated_data.get("email")
             )
-            
-            if user is None:
-                payload = error_response(status=False, message="User does not exist.")
-                return Response(data=payload, status=status.HTTP_404_NOT_FOUND)
         
             # generate verification link for user
             uid, token = generate_uid_token(request=request, user=user)
