@@ -1,0 +1,13 @@
+version: '3.9'
+
+services:
+  auth:
+    restart: always
+    build: .
+    command: sh -c "python manage.py makemigrations && python manage.py migrate --noinput && python manage.py runserver 0.0.0.0:80"
+    volumes:
+      - .:./auth_service
+    ports:
+      - "8080:8080"
+    env_file:
+      - ./.env
