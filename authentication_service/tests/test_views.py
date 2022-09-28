@@ -83,6 +83,16 @@ class BaseTestCase(APITestCase):
             "new_password": "someincredibly_awful_strong_password022"
         }
         
+        # valid and invalid reset password payload
+        self.valid_reset_password_payload = {
+            "new_password": "some_1234_incredible_5678_strongpwd",
+            "repeat_new_password": "some_1234_incredible_5678_strongpwd"
+        }
+        self.invalid_reset_password_payload = {
+            "new_password": "some_1234_incredible_5678_strongpwd",
+            "repeat_new_password": "some_1234_incredible_56789091"
+        }
+        
     @property
     def bearer_token(self):
         """
@@ -214,11 +224,43 @@ class ResetPasswordTestCase(BaseTestCase):
         response = client.post(url, data=self.invalid_email_payload, format="json")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
     
-    def test_vaild_verify_reset_password_uid_token(self):
-        return ...
+    def test_get_vaild_verify_reset_password_uid_token(self):
+       
+        uid, token = self.generate_uid_token
+        url = reverse("authentication_service:reset_uidb64_token", args=[uid, token])
+        
+        response = client.get(url)
+        
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, {"status": True, "message": "Password reset link verified!", "data": {}})
     
-    def test_invalid_verify_reset_password_uid_token(self):
-        return ...
+    def test_get_invalid_verify_reset_password_uid_token(self):
+        
+        uid, token = self.generate_uid_token
+        url = reverse("authentication_service:reset_uidb64_token", args=[uid, token + "somerando242"])
+        
+        response = client.get(url)
+        
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data, {"status": False, "message": "Password reset link invalid!"})
+    
+    def test_post_vaild_verify_reset_password_uid_token(self):
+        
+        uid, token = self.generate_uid_token
+        url = reverse("authentication_service:reset_uidb64_token", args=[uid, token])
+        
+        response = client.post(url, data=self.valid_reset_password_payload, format="json")
+        
+        self.assertEqual(response.status_code, status.HTTP_202_ACCEPTED)
+        self.assertEqual(response.data, {"status": True, "message": "Password successfully changed!", "data": {}})
+    
+    def test_post_invalid_verify_reset_password_uid_token(self):
+        
+        uid, token = self.generate_uid_token
+        url = reverse("authentication_service:reset_uidb64_token", args=[uid, token])
+        
+        response = client.post(url, data=self.invalid_reset_password_payload, format="json")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
     
     
 class ChangePasswordTestCase(BaseTestCase):
@@ -272,7 +314,7 @@ class SuspendUserTestCase(BaseTestCase):
         
         url = reverse("authentication_service:suspend_user", args=["abram@email.in"])
         response = client.put(url, **self.bearer_token)
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
     
     
 class GoogleOAuthLoginTestCase(BaseTestCase):
