@@ -2,3 +2,4 @@ include LICENSE.txt
 include README.md
 recursive-include authentication_service/static *
 recursive-include authentication_service/templates *
+recursive-include authentication_service/services *
