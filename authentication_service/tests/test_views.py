@@ -1,5 +1,8 @@
 # Django Imports
 from django.urls import reverse
+from django.utils.encoding import force_bytes
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.http import urlsafe_base64_encode
 
 # Rest Framework Imports
 from rest_framework.test import APIClient, APITestCase
@@ -89,6 +92,19 @@ class BaseTestCase(APITestCase):
         refresh = RefreshToken.for_user(user)
         return {"HTTP_AUTHORIZATION": f"Bearer {refresh.access_token}"}
     
+    
+    @property
+    def generate_uid_token(self):
+        """
+        Get base64 encoded url, and token for user
+        """
+        
+        user = AccountUser.objects.get(email="dpoxo@email.com")
+        uid = urlsafe_base64_encode(force_bytes(user.uuid))
+        token = default_token_generator.make_token(user)
+        
+        return uid, token
+    
 
 class RegisterTestCase(BaseTestCase):
     """
@@ -119,20 +135,22 @@ class RequestVerifyEmailTestCase(BaseTestCase):
     Test case to request / verify a user email address
     """
     
-    def test_valid_verify_email(self):
+    def test_valid_request_email_uid_token(self):
         """
         Test case to ensure that the user can 
-        verify their account with the valid payload.
+        request an activation link for their account 
+        with the valid payload.
         """
         
         url = reverse("authentication_service:request_email_token")
         response = client.post(url, data=self.valid_email_payload, format="json")
         self.assertEqual(response.status_code, status.HTTP_202_ACCEPTED)
         
-    def test_invalid_verify_email(self):
+    def test_invalid_request_email_uid_token(self):
         """
-        Test case to ensure that user cannot verify
-        their account with an invalid payload.
+        Test case to ensure that the user cannot 
+        request an activation liink for their account
+        with an invalid payload.
         """
         
         url = reverse("authentication_service:request_email_token")
@@ -140,10 +158,31 @@ class RequestVerifyEmailTestCase(BaseTestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         
     def test_valid_verify_email_uid_token(self):
-        return ...
+        """
+        Test case to ensure that the user can 
+        verify their account with the valid 
+        uid and token.
+        """
+        
+        uid, token = self.generate_uid_token
+        url = reverse("authentication_service:verify_uidb64_token", args=[uid, token])
+        
+        response = client.post(url)
+        
+        self.assertEqual(response.status_code, status.HTTP_202_ACCEPTED)
+        self.assertEqual(response.data, {"status": True, "message": "Email activated!", "data": {}})
     
     def test_invalid_verify_email_uid_token(self):
-        return ...
+        """
+        Test case to ensure that user cannot verify
+        their account with an invalid uid and token.
+        """
+        
+        uid, token = self.generate_uid_token
+        url = reverse("authentication_service:verify_uidb64_token", args=[uid, token + "somerandome12322"])
+        
+        response = client.post(url)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         
 
 class ResetPasswordTestCase(BaseTestCase):
