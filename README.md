@@ -19,6 +19,7 @@ Here are it's key features:
 - Reset Password
 - Reset Password Complete
 - Suspend User
+- *Google OAuth (In Progress)*
 
 ## API Schema
 
