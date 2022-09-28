@@ -1,6 +1,9 @@
 # Rest Framework Imports
 from rest_framework.request import Request
 
+# Django Imports
+from django.db.models import Q
+
 # Account Service Imports
 from authentication_service.models import AccountUser
 
@@ -15,7 +18,10 @@ def get_inactive_user(request:Request, email:str):
     :type email: str
     :return: The user object is being returned.
     """
-    user = AccountUser.objects.filter(email=email, is_active=False).first()
+    
+    user = AccountUser.objects.filter(
+        Q(email__iexact=email) & Q(is_active=False)  
+    ).first()
     return user
     
 
@@ -30,6 +36,7 @@ def get_active_user(request:Request, email:str):
     :return: The user object
     """
     
-    user = AccountUser.objects.filter(email=email, is_active=True).first()
+    user = AccountUser.objects.filter(
+        Q(email__iexact=email) & Q(is_active=True)  
+    ).first()
     return user
-    
