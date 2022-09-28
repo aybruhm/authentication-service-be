@@ -1,0 +1,438 @@
+swagger: '2.0'
+info:
+  title: Authentication Service Backend
+  description: Handles storage of users and authentication of their identities.
+  termsOfService: https://www.google.com/policies/terms/
+  contact:
+    email: israelvictory87@gmail.com
+  version: v1
+host: 127.0.0.1:3030
+schemes:
+  - http
+basePath: /api/v1
+consumes:
+  - application/json
+produces:
+  - application/json
+securityDefinitions:
+  Basic:
+    type: basic
+security:
+  - Basic: []
+paths:
+  /change_password/:
+    put:
+      operationId: change_password_update
+      description: |-
+        If the current password is correct, 
+        and the new password equals the repeat new password,
+        update the user password and save to database
+
+        :param request: This is the request object that is sent to the API
+        :type request: Request
+        :return: A response object with a payload of data and a status code.
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UserChangePassword'
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/UserChangePassword'
+      tags:
+        - change_password
+    parameters: []
+  /google_oauth2_login/:
+    post:
+      operationId: google_oauth2_login_create
+      summary: We are validating the id_token that is sent in the header of the request.
+      description: |-
+        If the id_token is valid, we are creating a response object and then calling the jwt_login
+        function
+
+        :param request: This is the request object that is sent to the server
+        :type request: Request
+        :return: The response object is being returned.
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/GoogleOAuth2'
+      responses:
+        '201':
+          description: ''
+          schema:
+            $ref: '#/definitions/GoogleOAuth2'
+      tags:
+        - google_oauth2_login
+    parameters: []
+  /login/:
+    post:
+      operationId: login_create
+      description: Inherits TokenObtainPairView from rest_framework simplejwt
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UserLoginObtainPair'
+      responses:
+        '201':
+          description: ''
+          schema:
+            $ref: '#/definitions/UserLoginObtainPair'
+      tags:
+        - login
+    parameters: []
+  /login/refresh/:
+    post:
+      operationId: login_refresh_create
+      description: Inherits TokenRefreshView from rest_framework simplejwt
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/TokenRefresh'
+      responses:
+        '201':
+          description: ''
+          schema:
+            $ref: '#/definitions/TokenRefresh'
+      tags:
+        - login
+    parameters: []
+  /logout/:
+    post:
+      operationId: logout_create
+      summary: It logs out the user and returns a 204 status code
+      description: |-
+        :param request: This is the request object that is passed to the view
+        :type request: Request
+        :return: A response object with a status code of 204 and no content.
+      parameters: []
+      responses:
+        '201':
+          description: ''
+      tags:
+        - logout
+    parameters: []
+  /register/:
+    post:
+      operationId: register_create
+      summary: |-
+        The function creates a user, generates a verification link, 
+        and sends an email to the user.
+      description: |-
+        :param request: The request object
+        :type request: Request
+        :return: A response object with a payload of data and a status code.
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/RegisterUser'
+      responses:
+        '201':
+          description: ''
+          schema:
+            $ref: '#/definitions/RegisterUser'
+      tags:
+        - register
+    parameters: []
+  /request_email_uid_token/:
+    post:
+      operationId: request_email_uid_token_create
+      description: |-
+        It takes in a request object, validates the email address, 
+        gets the inactive user, generates a
+        uid and token, and sends an email to the user.
+
+        :param request: The request object
+        :type request: Request
+        :return: A response object with a payload of data and a status code.
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UserEmail'
+      responses:
+        '201':
+          description: ''
+          schema:
+            $ref: '#/definitions/UserEmail'
+      tags:
+        - request_email_uid_token
+    parameters: []
+  /reset_password/:
+    post:
+      operationId: reset_password_create
+      summary: |-
+        It takes in a request object, 
+        validates the email address, 
+        generates a uid and token, and sends
+        an email to the user.
+      description: |-
+        :param request: The request object
+        :type request: Request
+        :return: A response object with a payload of data and a status code.
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UserEmail'
+      responses:
+        '201':
+          description: ''
+          schema:
+            $ref: '#/definitions/UserEmail'
+      tags:
+        - reset_password
+    parameters: []
+  /reset_password/{uidb64}/{token}/:
+    get:
+      operationId: reset_password_read
+      summary: |-
+        It takes a uidb64 and token, 
+        decodes the uidb64, 
+        and checks if the token is valid for the user
+      description: |-
+        :param request: The request object
+        :type request: Request
+        :param uidb64: The base64 encoded uuid of the user
+        :param token: The token generated by the default_token_generator
+        :return: A response object with a payload of data and a status code.
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - reset_password
+    post:
+      operationId: reset_password_create
+      description: |-
+        The function takes in a request, 
+        decodes the base64 encoded user id, 
+        gets the user with the id,
+        sets the user's password to the new password, 
+        and saves the user to the database.
+
+        :param request: The request object that was sent to the view
+        :type request: Request
+        :param uidb64: The base64 encoded user id
+        :param token: The token that was sent to the user's email
+        :return: A response object with a payload of data and a status code.
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UserResetPassword'
+      responses:
+        '201':
+          description: ''
+          schema:
+            $ref: '#/definitions/UserResetPassword'
+      tags:
+        - reset_password
+    parameters:
+      - name: token
+        in: path
+        required: true
+        type: string
+      - name: uidb64
+        in: path
+        required: true
+        type: string
+  /suspend_user/{user_email}/:
+    put:
+      operationId: suspend_user_update
+      summary: This function suspends a user
+      description: |-
+        :param request: The request object
+        :type request: Request
+        :param user_email: The email of the user to be suspended
+        :type user_email: str
+        :return: A response object with a payload of data and a status code.
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - suspend_user
+    parameters:
+      - name: user_email
+        in: path
+        required: true
+        type: string
+  /verify_email/{uidb64}/{token}/:
+    post:
+      operationId: verify_email_create
+      description: |-
+        It takes in a uidb64 and token, decodes the uidb64, 
+        gets the user with the uid, checks if the
+        token is valid, and if it is, 
+        sets the user's is_email_active and is_active to True.
+
+        :param request: The request object
+        :type request: Request
+        :param uidb64: The base64 encoded uuid of the user
+        :param token: The token generated by the default_token_generator
+        :return: A response object with a payload of data and a status code.
+      parameters: []
+      responses:
+        '201':
+          description: ''
+      tags:
+        - verify_email
+    parameters:
+      - name: token
+        in: path
+        required: true
+        type: string
+      - name: uidb64
+        in: path
+        required: true
+        type: string
+definitions:
+  UserChangePassword:
+    required:
+      - email
+      - current_password
+      - new_password
+      - repeat_new_password
+    type: object
+    properties:
+      email:
+        title: Email
+        type: string
+        format: email
+        minLength: 1
+      current_password:
+        title: Current password
+        type: string
+        minLength: 1
+      new_password:
+        title: New password
+        type: string
+        minLength: 1
+      repeat_new_password:
+        title: Repeat new password
+        type: string
+        minLength: 1
+  GoogleOAuth2:
+    required:
+      - email
+    type: object
+    properties:
+      email:
+        title: Email
+        type: string
+        format: email
+        minLength: 1
+      first_name:
+        title: First name
+        type: string
+        default: ''
+        minLength: 1
+      last_name:
+        title: Last name
+        type: string
+        default: ''
+        minLength: 1
+  UserLoginObtainPair:
+    required:
+      - email
+      - password
+    type: object
+    properties:
+      email:
+        title: Email
+        type: string
+        minLength: 1
+      password:
+        title: Password
+        type: string
+        minLength: 1
+  TokenRefresh:
+    required:
+      - refresh
+    type: object
+    properties:
+      refresh:
+        title: Refresh
+        type: string
+        minLength: 1
+      access:
+        title: Access
+        type: string
+        readOnly: true
+        minLength: 1
+  RegisterUser:
+    required:
+      - username
+      - email
+      - password
+    type: object
+    properties:
+      firstname:
+        title: Firstname
+        description: What's your firstname?
+        type: string
+        maxLength: 255
+        x-nullable: true
+      lastname:
+        title: Lastname
+        description: What's your lastname?
+        type: string
+        maxLength: 255
+        x-nullable: true
+      username:
+        title: Username
+        description: What's your preferred username?
+        type: string
+        maxLength: 255
+        minLength: 1
+      email:
+        title: Email
+        description: What's your email address?
+        type: string
+        format: email
+        maxLength: 255
+        minLength: 1
+      password:
+        title: Password
+        type: string
+        maxLength: 128
+        minLength: 1
+  UserEmail:
+    required:
+      - email
+    type: object
+    properties:
+      email:
+        title: Email
+        type: string
+        format: email
+        minLength: 1
+  UserResetPassword:
+    required:
+      - new_password
+      - repeat_new_password
+    type: object
+    properties:
+      new_password:
+        title: New password
+        type: string
+        minLength: 1
+      repeat_new_password:
+        title: Repeat new password
+        type: string
+        minLength: 1
