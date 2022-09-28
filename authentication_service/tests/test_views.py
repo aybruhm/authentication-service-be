@@ -200,10 +200,11 @@ class ResetPasswordTestCase(BaseTestCase):
     Test case to reset a user password
     """
     
-    def test_valid_reset_password(self):
+    def test_valid_request_reset_password(self):
         """
         Test case to ensure that the user can
-        reset their password with a valid payload.
+        request for a change of their password 
+        with a valid payload.
         """
         
         # update inactive user
@@ -214,10 +215,11 @@ class ResetPasswordTestCase(BaseTestCase):
         response = client.post(url, data=self.valid_email_payload, format="json")
         self.assertEqual(response.status_code, status.HTTP_202_ACCEPTED)
     
-    def test_invalid_reset_password(self):
+    def test_invalid_request_reset_password(self):
         """
         Test case to ensure that the user cannot
-        reset their password with an invalid payload.
+        request for a change of their password with 
+        an invalid payload.
         """
         
         url = reverse("authentication_service:reset_password")
@@ -225,6 +227,10 @@ class ResetPasswordTestCase(BaseTestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
     
     def test_get_vaild_verify_reset_password_uid_token(self):
+        """
+        Test case to ensure that the reset password 
+        link (uid and token) is valid.
+        """
        
         uid, token = self.generate_uid_token
         url = reverse("authentication_service:reset_uidb64_token", args=[uid, token])
@@ -235,6 +241,10 @@ class ResetPasswordTestCase(BaseTestCase):
         self.assertEqual(response.data, {"status": True, "message": "Password reset link verified!", "data": {}})
     
     def test_get_invalid_verify_reset_password_uid_token(self):
+        """
+        Test case to ensure that the reset password
+        link (uid and token) is invalid. 
+        """
         
         uid, token = self.generate_uid_token
         url = reverse("authentication_service:reset_uidb64_token", args=[uid, token + "somerando242"])
@@ -245,6 +255,10 @@ class ResetPasswordTestCase(BaseTestCase):
         self.assertEqual(response.data, {"status": False, "message": "Password reset link invalid!"})
     
     def test_post_vaild_verify_reset_password_uid_token(self):
+        """
+        Test case to ensure that the user can reset their 
+        password with a valid payload (along with the uid and token).
+        """
         
         uid, token = self.generate_uid_token
         url = reverse("authentication_service:reset_uidb64_token", args=[uid, token])
@@ -255,6 +269,10 @@ class ResetPasswordTestCase(BaseTestCase):
         self.assertEqual(response.data, {"status": True, "message": "Password successfully changed!", "data": {}})
     
     def test_post_invalid_verify_reset_password_uid_token(self):
+        """
+        Test case to ensure that the user cannot reset their password
+        with an invalid payload (along with the uid and token).
+        """
         
         uid, token = self.generate_uid_token
         url = reverse("authentication_service:reset_uidb64_token", args=[uid, token])
