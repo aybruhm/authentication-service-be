@@ -1,6 +1,9 @@
 # Rest Framework Imports
 from rest_framework import serializers
 
+# Django Imports
+from django.db.models import Q
+
 # SimpleJWT Imports
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
@@ -26,13 +29,11 @@ class RegisterUserSerializer(serializers.ModelSerializer):
         email = attrs.get("email")
         username = attrs.get("username")
         
-        """Check if user with email exists"""
-        if AccountUser.objects.filter(email=email).exists():
-            raise serializers.ValidationError("Email exits already. Please try again!")
-        
-        """Checks if user with username exists"""
-        if AccountUser.objects.filter(username=username).exists():
-            raise serializers.ValidationError("Username exits already. Please try again!")
+        # Check if a user with the username or email exists
+        if AccountUser.objects.filter(
+            Q(email__iexact=email) | Q(username__iexact=username)  
+        ).exists():
+            raise serializers.ValidationError("User exits. Please try again!")
         
         return super().validate(attrs)
     
@@ -57,21 +58,22 @@ class UserLoginObtainPairSerializer(TokenObtainPairSerializer):
             
             payload = success_response(
                 status=True,
-                message="You have been suspended.",
+                message="Account suspended. Kindly reach out to the support team.",
                 data={}
             )
             return payload
 
-        """Custom data you want to include"""
+        # Added custom data to token serializer
         data.update({"firstname": self.user.firstname})
         data.update({"lastname": self.user.lastname})
         data.update({"username": self.user.username})
         data.update({"email": self.user.email})
         data.update({"id": self.user.id})
 
-        """Return custom data in the response"""
         payload = success_response(
-            status=True, message="Login successful", data=data
+            status=True, 
+            message="Login successful", 
+            data=data
         )
         return payload
     
@@ -84,9 +86,11 @@ class UserEmailSerializer(serializers.Serializer):
         # Get email from attrs
         email = attrs.get("email")
         
-        """Check if email does not exists"""
-        if not AccountUser.objects.filter(email=email).exists():
-            raise serializers.ValidationError("Email does not exits!")
+        # Check if a user with the email does not exist
+        if not AccountUser.objects.filter(
+                Q(email__iexact=email)
+            ).exists():
+            raise serializers.ValidationError("User does not exist.")
         
         return super().validate(attrs)
     
@@ -105,10 +109,11 @@ class UserResetPasswordSerializer(serializers.Serializer):
     
     def validate(self, attrs):
         
-        # get password (new and repeat)
+        # get password (new and repeat) from attrs
         new_password = attrs.get("new_password")
         re_new_password = attrs.get("repeat_new_password")
-            
+        
+        # Check if both password are not equal
         if new_password != re_new_password:
             raise serializers.ValidationError(
                 {"incorrect_pwd": "Password incorrect. Please try again!"}
@@ -137,12 +142,22 @@ class UserChangePasswordSerializer(serializers.Serializer):
     
     def validate(self, attrs):
         
-        # Get email from attrs
+        # Get email and pwds from attrs
         email = attrs.get("email")
+        new_password = attrs.get("new_password")
+        re_new_password = attrs.get("repeat_new_password")
         
-        """Check if email does not exists"""
-        if not AccountUser.objects.filter(email=email).exists():
-            raise serializers.ValidationError("Email does not exist!")
+        # Check if a user with the email does not exist
+        if not AccountUser.objects.filter(
+                Q(email__iexact=email)
+            ).exists():
+            raise serializers.ValidationError("User does not exist.")
+
+        # Check if both password are not equal
+        if new_password != re_new_password:
+            raise serializers.ValidationError(
+                {"incorrect_pwd": "Password incorrect. Please try again!"}
+            )
         
         return super().validate(attrs)
     
