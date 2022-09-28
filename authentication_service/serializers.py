@@ -103,6 +103,19 @@ class UserResetPasswordSerializer(serializers.Serializer):
         style={"input_type": "password", "placeholder": "Repeat New Password"},
     )
     
+    def validate(self, attrs):
+        
+        # get password (new and repeat)
+        new_password = attrs.get("new_password")
+        re_new_password = attrs.get("repeat_new_password")
+            
+        if new_password != re_new_password:
+            raise serializers.ValidationError(
+                {"incorrect_pwd": "Password incorrect. Please try again!"}
+            )
+        
+        return super().validate(attrs)
+    
 
 class UserChangePasswordSerializer(serializers.Serializer):
     email = serializers.EmailField(required=True)
@@ -129,7 +142,7 @@ class UserChangePasswordSerializer(serializers.Serializer):
         
         """Check if email does not exists"""
         if not AccountUser.objects.filter(email=email).exists():
-            raise serializers.ValidationError("Email does not exits!")
+            raise serializers.ValidationError("Email does not exist!")
         
         return super().validate(attrs)
     
