@@ -14,9 +14,6 @@ from rest_framework_simplejwt.tokens import RefreshToken
 # Own Imports
 from authentication_service.models import AccountUser
 
-# Native Imports
-import json
-
 
 # initialize api client
 client = APIClient()
@@ -101,8 +98,7 @@ class BaseTestCase(APITestCase):
         user = AccountUser.objects.get(email="israelabraham@email.com")
         refresh = RefreshToken.for_user(user)
         return {"HTTP_AUTHORIZATION": f"Bearer {refresh.access_token}"}
-    
-    
+      
     @property
     def generate_uid_token(self):
         """
@@ -129,7 +125,6 @@ class RegisterTestCase(BaseTestCase):
         response = client.post(url, data=self.valid_payload, format="json")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
-    
     def test_invalid_register(self):
         """
         Test case to ensurue we can't create 
@@ -195,9 +190,9 @@ class RequestVerifyEmailTestCase(BaseTestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         
 
-class ResetPasswordTestCase(BaseTestCase):
+class ResetVerifyPasswordTestCase(BaseTestCase):
     """
-    Test case to reset a user password
+    Test case to reset / verify a user password
     """
     
     def test_valid_request_reset_password(self):
