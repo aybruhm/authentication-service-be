@@ -10,66 +10,19 @@ A django rest authentication service backend that handles storage of users accou
 Here are it's key features:
 
 - Register
-
-```http
-POST: /register/
-```
-
 - Login (JWT)
-
-```http
-POST: /login/
-```
-
 - Login (Refresh JWT)
-
-```http
-POST: /login/refresh/
-```
-
 - Request Email
-
-```http
-POST: /request_email_uid_token/
-```
-
 - Verify Email (Uid & Token)
-
-```http
-POST: /verify_email/{uidb64}/{token}/
-```
-
 - Logout
-
-```http
-POST: /logout/
-```
-
 - Change Password
-
-```http
-PUT: /change_password/
-```
-
 - Reset Password
-
-```http
-POST: /reset_password/
-```
-
 - Reset Password Complete
-
-```http
-GET: /reset_password/{uidb64}/{token}/
-
-POST: /reset_password/{uidb64}/{token}/
-```
-
 - Suspend User
 
-```http
-PUT: /suspend_user/{user_email}/
-```
+## API Schema
+
+Download and Import the [schema](api-schemas.yaml) to your favourite API testing tool (postman, insomnia, etc) to get the endpoints and expected payload.
 
 ## Requirements
 
