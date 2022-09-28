@@ -10,7 +10,7 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
  
 setup(
     name = 'django-authentication-service',
-    version = '0.0.1',
+    version = '0.0.2',
     packages = find_packages(exclude=["*tests", "core"]),
     include_package_data = True,
     license = 'CC0 1.0 Universal Public Domain Dedication',
