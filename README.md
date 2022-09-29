@@ -7,7 +7,7 @@ A django rest authentication service backend that handles storage of users accou
 
 ## Endpoints
 
-Here are it's key features:
+The following have been unit tested and ready to use:
 
 - Register
 - Login (JWT)
