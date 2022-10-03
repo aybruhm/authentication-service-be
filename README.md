@@ -32,6 +32,8 @@ Download and Import the [schema](api-schemas.yaml) to your favourite API testing
 
 ## Quick Start
 
+### Pip Installation
+
 1). Install using `pip`:
 
 ```python
@@ -100,6 +102,30 @@ AUTHENTICATION_SERVICE = {
 ```python
 python manage.py runserver 8080
 ```
+
+### Docker Installation
+
+To get the service up and running, follow the steps below:
+
+1). Run the commands below in your terminal:
+
+```bash
+git clone git@github.com:israelabraham/authentication-service-be.git
+```
+
+2). Change directory to authentication-service-be:
+
+```bash
+cd authentication-service-be
+```
+
+3). Build and run the service with:
+
+```bash
+docker-compose up --build
+```
+
+The service will build and run on port `8080`.
 
 ## Documentation & Support
 
