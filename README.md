@@ -119,7 +119,9 @@ git clone git@github.com:israelabraham/authentication-service-be.git
 cd authentication-service-be
 ```
 
-3). Build and run the service with:
+3). Rename the `.env.template` file to `.env` and update the values.
+
+4). Build and run the service with:
 
 ```bash
 docker-compose up --build
