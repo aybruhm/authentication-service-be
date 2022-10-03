@@ -32,9 +32,9 @@ urlpatterns = [
    path("api/v1/", include("authentication_service.urls")),
    
    # api documentation routes
-   re_path(r'^swagger(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0), name='schema-json'),
-   re_path(r'^api-doc-swagger/$', schema_view.with_ui('swagger', cache_timeout=0), name='api_doc_swagger'),
-   re_path(r'^api-doc-redoc/$', schema_view.with_ui('redoc', cache_timeout=0), name='api_doc_redoc'),
+   re_path(r'^generate_api_docs(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0), name='schema-json'),
+   re_path(r'^docs/swagger/$', schema_view.with_ui('swagger', cache_timeout=0), name='api_docs_swagger'),
+   re_path(r'^docs/redoc/$', schema_view.with_ui('redoc', cache_timeout=0), name='api_docs_redoc'),
 ]
 
 if settings.DEBUG:
